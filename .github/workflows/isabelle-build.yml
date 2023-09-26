@@ -1,4 +1,4 @@
-# Code has been taken from here: https://github.com/luisamontanari/ContrasimGame/blob/main/.github/workflows/isabelle-build.ymlon 2023-09-26.
+# Code has been taken from here: https://github.com/luisamontanari/ContrasimGame/blob/main/.github/workflows/isabelle-build.yml
 
 name: Build Isabelle
 
