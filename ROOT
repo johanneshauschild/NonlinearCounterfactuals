@@ -1,3 +1,5 @@
+chapter NLC
+
 session "Nonlinear_Counterfactuals" = "HOL-Library" +
 options [
   document = "pdf",
