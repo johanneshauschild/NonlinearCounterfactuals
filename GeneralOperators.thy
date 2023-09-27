@@ -8,7 +8,7 @@ section \<open>A reinterpretation of Lewis operators in the base structure\<clos
 subsection \<open>Defining the operators\<close>
 
 text \<open>Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023} suggest to drop the assumption that every world is accessible 
-      from the actual world by not including inaccessible worlds in \<le><w>. Small modifications on 
+      from the actual world by not including inaccessible worlds in $\leq_w$. Small modifications on 
       Universal Would and Existenstial Might make it possible to depict their semantics 
       in this more general structure\<close>
 
