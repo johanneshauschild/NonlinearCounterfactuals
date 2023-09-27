@@ -1,8 +1,8 @@
+section \<open>Definition of Lewis \emph{Counterfactual} operators\<close>
+
 theory LewisOperators
   imports StructureAndAssumptions
 begin
- 
-section \<open>Definition of Lewis \emph{Counterfactual} operators\<close>
 
 context preordered_counterfactual_structure begin
 

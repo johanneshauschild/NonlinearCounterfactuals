@@ -1,8 +1,8 @@
+section \<open>Structure and sets of assumptions\<close>
+
 theory StructureAndAssumptions
   imports Main
 begin 
-
-section \<open>Structure and sets of assumptions\<close>
 
 locale world_dependent_kripke_structure =
   fixes
@@ -21,6 +21,8 @@ locale preordered_counterfactual_structure = world_dependent_kripke_structure ap
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
     accessibility :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool" ("_ \<le><_> _" [70, 70, 70] 80) +
   assumes
+    \<comment>\<open>Lewis' @{cite lewisCounterfactuals1973}  as well as Finkbeiner and Sibers 
+      @{cite finkbeinerCounterfactualsModuloTemporal2023}  structure are transitive\<close>
     transitive [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w2 \<le><w> w3\<rbrakk> \<Longrightarrow> w1 \<le><w> w3\<close>  and
     \<comment>\<open>We assume, that any two worlds, wich are comparable in respect to a world, are also 
       acessible from that world:\<close>
