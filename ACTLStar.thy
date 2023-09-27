@@ -108,7 +108,7 @@ begin
 notation general_would (\<open>_ \<box>\<rightarrow>\<hungarumlaut> _\<close> [70, 70] 100)  
 notation sem_actl_star  (\<open>\<lbrakk> _ \<rbrakk>\<close> 80)
 
-\<comment>\<open>The key difference between w_true and w_false. Facilitating metis proofs.\<close>
+\<comment>\<open>The key difference between $w_{true}$ and $w_{false}$. Facilitating metis proofs.\<close>
 lemma w3_not_accessible_from_w_true:
   shows \<open>w_true \<le><w_true> w3 \<Longrightarrow> False\<close>
   by auto 
@@ -402,6 +402,4 @@ proof (rule ccontr)
 qed
 
 end
-
 end
-

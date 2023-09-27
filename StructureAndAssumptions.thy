@@ -8,7 +8,7 @@ locale world_dependent_kripke_structure =
   fixes
     \<comment>\<open>assigning a set of atomic propositions to each world.\<close>
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
-    \<comment>\<open>$w1 \<le><w> w2$ is enconding the notion "world w1 is more similiar to w than w2"\<close>
+    \<comment>\<open>$w1 \leq<w> w2$ is enconding the notion "world w1 is more similiar to w than w2"\<close>
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
