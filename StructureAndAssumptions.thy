@@ -65,12 +65,14 @@ lemma (in lewisian_structure) non_vacuous_woulds_equal:
     (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))) \<longleftrightarrow> (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
     (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
 proof
-  assume \<open>\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
+  assume \<open>\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+          (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
   thus \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>)\<close>
     by (metis assms meaningful_acessibility)
 next
   assume \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>)\<close>
-  thus \<open>\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
+  thus \<open>\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+       (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
     by (metis linearity local.transitive)
 qed
 
@@ -119,15 +121,19 @@ lemma (in preordered_counterfactual_structure) extend_at_least_as_pos_to_general
 lemma (in lewisian_structure) general_would_comprehension_is_would_comprehension:
   shows
     \<open>(\<forall> w1. (w \<le><w> w1 \<and> w1 \<in> \<phi>) \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
-    (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))) \<longleftrightarrow> (\<forall> w1. (w \<le><w> w1) \<longrightarrow> w1 \<notin> \<phi>) \<or> 
-    (\<exists> w1. (w \<le><w> w1) \<and> w1 \<in> \<phi> \<and> (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
+     (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))) \<longleftrightarrow> (\<forall> w1. (w \<le><w> w1) \<longrightarrow> w1 \<notin> \<phi>) \<or> 
+     (\<exists> w1. (w \<le><w> w1) \<and> w1 \<in> \<phi> \<and> (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
 proof
-  assume \<open>(\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))\<close>
-  thus \<open>(\<forall>w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
+  assume \<open>(\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+          (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))\<close>
+  thus \<open>(\<forall>w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
+        (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
     by (metis meaningful_acessibility)
 next
-  assume \<open>(\<forall>w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
-  thus \<open>(\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))\<close>
+  assume \<open>(\<forall>w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
+          (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
+  thus \<open>(\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+        (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))\<close>
     by (metis lewisian_structure.linearity lewisian_structure_axioms local.transitive)
 qed
 

@@ -14,8 +14,10 @@ definition would ::
     \<open>\<phi> \<box>\<rightarrow> \<psi> \<equiv> {w. (\<forall> w1. (w \<le><w> w1) \<longrightarrow> w1 \<notin> \<phi>) \<or>
     (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))}\<close>
 
-abbreviation (in preordered_counterfactual_structure) might :: \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<diamond>\<rightarrow>\<close>100)
-  where \<open>\<phi> \<diamond>\<rightarrow> \<psi> \<equiv> UNIV - (\<phi> \<box>\<rightarrow> (UNIV - \<psi>))\<close>
+abbreviation (in preordered_counterfactual_structure) might :: 
+  \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<diamond>\<rightarrow>\<close>100)
+  where 
+    \<open>\<phi> \<diamond>\<rightarrow> \<psi> \<equiv> UNIV - (\<phi> \<box>\<rightarrow> (UNIV - \<psi>))\<close>
 
 subsection \<open>Necessity and Possibility\<close>
 
@@ -34,17 +36,25 @@ abbreviation (in preordered_counterfactual_structure) possible ::
 
 subsection \<open>Four more of Lewis operators\<close>
 
-abbreviation  (in preordered_counterfactual_structure) strong_would :: \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<box>\<Rightarrow>\<close>100)
-  where \<open>\<phi> \<box>\<Rightarrow> \<psi> \<equiv> (\<diamond>\<phi>) \<inter> (\<phi> \<box>\<rightarrow> \<psi>)\<close>
+abbreviation  (in preordered_counterfactual_structure) strong_would :: 
+  \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<box>\<Rightarrow>\<close>100)
+  where 
+    \<open>\<phi> \<box>\<Rightarrow> \<psi> \<equiv> (\<diamond>\<phi>) \<inter> (\<phi> \<box>\<rightarrow> \<psi>)\<close>
 
-abbreviation (in preordered_counterfactual_structure) weak_might :: \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<diamond>\<Rightarrow>\<close>100)
-  where \<open>\<phi> \<diamond>\<Rightarrow> \<psi> \<equiv> UNIV - (\<phi> \<box>\<Rightarrow> (UNIV - \<psi>))\<close>
+abbreviation (in preordered_counterfactual_structure) weak_might :: 
+  \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<diamond>\<Rightarrow>\<close>100)
+  where 
+    \<open>\<phi> \<diamond>\<Rightarrow> \<psi> \<equiv> UNIV - (\<phi> \<box>\<Rightarrow> (UNIV - \<psi>))\<close>
 
-abbreviation (in preordered_counterfactual_structure) more_possible :: \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<prec>\<close>100)
-  where \<open>\<phi> \<prec> \<psi> \<equiv> (\<phi> \<union> \<psi>) \<box>\<Rightarrow> (UNIV - \<psi>)\<close>
+abbreviation (in preordered_counterfactual_structure) more_possible :: 
+  \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<prec>\<close>100)
+  where 
+    \<open>\<phi> \<prec> \<psi> \<equiv> (\<phi> \<union> \<psi>) \<box>\<Rightarrow> (UNIV - \<psi>)\<close>
 
-abbreviation (in preordered_counterfactual_structure) at_least_as_possible :: \<open>'i set \<Rightarrow>  'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<preceq>\<close>100)
-  where \<open>\<phi> \<preceq> \<psi> \<equiv> (\<phi> \<union> \<psi>) \<diamond>\<Rightarrow> \<phi>\<close>
+abbreviation (in preordered_counterfactual_structure) at_least_as_possible :: 
+  \<open>'i set \<Rightarrow>  'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<preceq>\<close>100)
+  where 
+    \<open>\<phi> \<preceq> \<psi> \<equiv> (\<phi> \<union> \<psi>) \<diamond>\<Rightarrow> \<phi>\<close>
 end
 
 subsection \<open>Validatin of Lewis operators\<close>
@@ -85,13 +95,16 @@ lemma possible_follows_defintion:
 
 lemma might_follows_definition:
   shows 
-    \<open>w \<in> \<phi> \<diamond>\<rightarrow> \<psi> \<longleftrightarrow> w \<in>  {w. (\<exists> w1. w \<le><w> w1  \<and> w1 \<in> \<phi>) \<and> (\<forall> w1. w \<le><w> w1 \<longrightarrow> (w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>)))}\<close>
+    \<open>w \<in> \<phi> \<diamond>\<rightarrow> \<psi> \<longleftrightarrow> w \<in>  {w. (\<exists> w1. w \<le><w> w1  \<and> w1 \<in> \<phi>) \<and> 
+     (\<forall> w1. w \<le><w> w1 \<longrightarrow> (w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>)))}\<close>
 proof
   assume \<open>w \<in> UNIV - \<phi> \<box>\<rightarrow> (UNIV - \<psi>)\<close>
-  thus \<open>w \<in> {w. (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> (\<forall> w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
-    by (simp add: preordered_counterfactual_structure.would_def preordered_counterfactual_structure_axioms)
+  thus \<open>w \<in> {w. (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> 
+        (\<forall> w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
+    by (simp add: would_def preordered_counterfactual_structure_axioms)
 next
-  assume \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> (\<forall> w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
+  assume \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> 
+          (\<forall> w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
   thus \<open>w \<in> UNIV - \<phi> \<box>\<rightarrow> (UNIV - \<psi>) \<close>
     using would_def by auto
 qed
@@ -99,13 +112,13 @@ qed
 lemma strong_would_follows_definion:
   shows
     \<open>w \<in> \<phi> \<box>\<Rightarrow> \<psi> \<longleftrightarrow> w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
-    (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> (w2 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>
+     (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> (w2 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>
   using would_def by auto
 
 lemma weak_might_follows_definition:
   shows
-  \<open>w \<in> \<phi> \<diamond>\<Rightarrow> \<psi> \<longleftrightarrow> w \<in> {w. \<not>(\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<or>
-    (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
+    \<open>w \<in> \<phi> \<diamond>\<Rightarrow> \<psi> \<longleftrightarrow> w \<in> {w. \<not>(\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<or>
+     (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
   using would_def by auto
 
 lemma at_least_as_possible_follows_definition:
