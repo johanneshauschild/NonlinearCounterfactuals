@@ -1,0 +1,57 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{color}
+
+\usepackage[top=3cm,bottom=4.5cm]{geometry}
+
+%tikz libs
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric, arrows, arrows.meta}
+\usetikzlibrary{calc,decorations.pathmorphing,shapes}
+
+\definecolor{keyword}{RGB}{0,153,102}
+\definecolor{command}{RGB}{0,102,153}
+\isabellestyle{tt}
+\renewcommand{\isacommand}[1]{\textcolor{command}{\textbf{#1}}}
+\renewcommand{\isakeyword}[1]{\textcolor{keyword}{\textbf{#1}}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in isabelle-similar-similar type-writer
+\urlstyle{rm}
+\isabellestyle{tt}
+
+\title{ \textbf{Nonlinear Counterfactuals in Isabelle/HOL}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Lorem ipsum dolor sit amet.
+
+
+\end{abstract}
+
+% include generated text of all theories
+\input{session}
+
+\phantomsection
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{alphaurl}
+\bibliography{root}
+
+
+\end{document}
