@@ -9,7 +9,7 @@ subsection \<open>Defining the operators\<close>
 
 text \<open>Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023} suggest to drop the assumption that every world is accessible 
       from the actual world by not including inaccessible worlds in $\leq_w$. Small modifications on 
-      Universal Would and Existenstial Might make it possible to depict their semantics 
+      Universal Would and Existential Might make it possible to depict their semantics 
       in this more general structure\<close>
 
 definition (in preordered_counterfactual_structure) general_would ::
