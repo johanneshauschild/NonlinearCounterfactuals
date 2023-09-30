@@ -178,7 +178,7 @@ proof -
     using simplify_general_would phi_semantics psi_semantics by metis
 qed
 
-subsection \<open>Paths for $w_{true}$ and $w_{false} equal.\<close>
+subsection \<open>Paths for $w_{true}$ and $w_{false}$ equal.\<close>
 
 lemma no_single_psi_world:
   shows \<open>\<forall> i1. \<bullet> i1 \<noteq> {\<psi>}\<close> 
