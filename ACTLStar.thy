@@ -9,6 +9,14 @@ begin
 
 context world_dependant_kripke_structure begin
 
+subsection \<open>Definition of a reduced ACTL* version\<close>
+
+text \<open>We give a formalisation of a reduced version of the logic CTL* described by Emerson, Allen and 
+      Halpern @{cite Emerson1983}. The existential quantifier over paths  can be substituted by a 
+      negated quantifier over all paths leaving us with the Logic ACTL*. 
+      Our interpretation of ACTL* path formulas is taken from the LTL formalisation done by Sickert 
+      and Seidel @{cite LTLAFP}.\<close>
+
 definition is_path :: \<open>'i \<Rightarrow> 'ap set word \<Rightarrow> bool\<close> 
   where \<open>is_path w \<pi> \<equiv> \<pi> 0 = ap(w) \<and> (\<forall> n. (\<exists> i1 i2. (i1 \<le><w> i2) \<and> (ap(i1) = \<pi> n) 
         \<and> (ap(i2) = \<pi> (Suc n))))\<close>
@@ -16,14 +24,8 @@ definition is_path :: \<open>'i \<Rightarrow> 'ap set word \<Rightarrow> bool\<c
 definition paths :: \<open>'i \<Rightarrow> 'ap set word set\<close>
   where \<open>paths w \<equiv> {\<pi>. is_path w \<pi>}\<close>
 
-subsection \<open>Definition of a reduced ACTL* version\<close>
-
-text \<open>We give a formalisation of a reduced version of the logic CTL* described by Emerson Allen and 
-      Halpern @{cite Emerson1983}. The existential quantifier over paths  can be substituted by a 
-      negated quantifier over all paths leaving us with the Logic ACTL*. 
-      Our interpretation of ACTL* path formulas is taken from the LTL formalisation done by Sickert 
-      and Seidel @{cite LTLAFP}.\<close>
-
+\<comment>\<open>We can abstract from concrete semantics of the path formulas in later proofs. Hence a reduced
+  implementation is sufficient.\<close>
 datatype 'a ltlr =
   Prop_ltlr 'a                              (\<open>prop\<^sub>r'(_')\<close>)
   | True_ltlr                               (\<open>true\<^sub>r\<close>)

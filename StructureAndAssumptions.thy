@@ -8,8 +8,8 @@ locale world_dependant_kripke_structure =
   fixes
     \<comment>\<open>assigning a set of atomic propositions to each world.\<close>
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
-    \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "from $w_1$ $w_2$ is possible 
-       (as seen from $w$'s viewpoint)".\<close>
+    \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "From $w_1$ $w_2$ is possible 
+       (as seen from $w$'s viewpoint).".\<close>
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
@@ -29,15 +29,15 @@ locale preordered_counterfactual_structure = world_dependant_kripke_structure ap
     \<comment>\<open>Lewis' @{cite lewisCounterfactuals1973}  as well as Finkbeiner and Sibers 
       @{cite finkbeinerCounterfactualsModuloTemporal2023}  structure are transitive\<close>
     transitive [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w2 \<le><w> w3\<rbrakk> \<Longrightarrow> w1 \<le><w> w3\<close>  and
-    \<comment>\<open>We assume, that any two worlds, wich are comparable in respect to a world, are also 
-      acessible from that world:\<close>
+    \<comment>\<open>We assume, that any two worlds, which are comparable in respect to a world, are also 
+      accessible from that world:\<close>
     meaningful_acessibility [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w1 \<noteq> w2\<rbrakk> \<Longrightarrow> w \<le><w> w1 \<and> w \<le><w> w2\<close> 
 
 text \<open>Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023}, 
       as well as Lewis @{cite lewisCounterfactuals1973}, require $\leq_w$ to be minimal,
       meaning there exists no World $w'$ different from $w$ for which $w' \leq_w w$ holds.
       Conducting the proofs, this assumption turned out to be spurious. 
-      Hence it is not included in any of the locales\<close>
+      Hence it is not included in any of the locales.\<close>
 
 locale finkbeiner_siber_structure = preordered_counterfactual_structure ap accessibility
   for
@@ -57,7 +57,7 @@ locale total_accessible_lewisian_structure = lewisian_structure + finkbeiner_sib
 
 section \<open>Formula equivalences\<close>
 
-\<comment>\<open>A lemma testing for basic liveliness property of the counterfactual structures.\<close>
+\<comment>\<open>A lemma testing for a basic liveliness property.\<close>
 lemma (in preordered_counterfactual_structure) not_phi_would_phi_false:
   shows 
     \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> UNIV - \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> \<phi>) \<Longrightarrow> False\<close>
