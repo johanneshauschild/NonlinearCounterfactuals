@@ -1,4 +1,4 @@
-section \<open>Relation between ACTL* subset to the counterfactual Would Operator\<close>
+section \<open>Relation of ACTL* to the counterfactual Would Operator\<close>
 
 theory ACTLStar
 
@@ -7,8 +7,7 @@ imports
   Main "HOL-Library.Omega_Words_Fun"
 begin
 
-context world_dependent_kripke_structure
-begin
+context world_dependant_kripke_structure begin
 
 definition is_path :: \<open>'i \<Rightarrow> 'ap set word \<Rightarrow> bool\<close> 
   where \<open>is_path w \<pi> \<equiv> \<pi> 0 = ap(w) \<and> (\<forall> n. (\<exists> i1 i2. (i1 \<le><w> i2) \<and> (ap(i1) = \<pi> n) 
@@ -19,27 +18,31 @@ definition paths :: \<open>'i \<Rightarrow> 'ap set word set\<close>
 
 subsection \<open>Definition of a reduced ACTL* version\<close>
 
-text \<open>This interpretation of ACTL* path formulas draws heavily on the LTL 
-      formalisation done by Sickert and Seidel @{cite LTLAFP}.\<close>
+text \<open>We give a formalisation of a reduced version of the logic CTL* described by Emerson Allen and 
+      Halpern @{cite Emerson1983}. The existential quantifier over paths  can be substituted by a 
+      negated quantifier over all paths leaving us with the Logic ACTL*. 
+      Our interpretation of ACTL* path formulas is taken from the LTL formalisation done by Sickert 
+      and Seidel @{cite LTLAFP}.\<close>
+
 datatype 'a ltlr =
-  Prop_ltlr 'a                              ("prop\<^sub>r'(_')")
-  | True_ltlr                               ("true\<^sub>r")
-  | False_ltlr                              ("false\<^sub>r")
-  | And_ltlr "'a ltlr" "'a ltlr"            ("_ and\<^sub>r _" [82,82] 81)
-  | Implies_ltlr "'a ltlr" "'a ltlr"        ("_ implies\<^sub>r _" [81,81] 80)
-  | Finally_ltlr "'a ltlr"                  ("F\<^sub>r _" [88] 87)
-  | Until_ltlr "'a ltlr" "'a ltlr"          ("_ U\<^sub>r _" [84,84] 83)
+  Prop_ltlr 'a                              (\<open>prop\<^sub>r'(_')\<close>)
+  | True_ltlr                               (\<open>true\<^sub>r\<close>)
+  | False_ltlr                              (\<open>false\<^sub>r\<close>)
+  | And_ltlr  \<open>'a ltlr\<close> \<open>'a ltlr\<close>           (\<open>_ and\<^sub>r _\<close> [82,82] 81)
+  | Implies_ltlr \<open>'a ltlr\<close> \<open>'a ltlr\<close>        (\<open>_ implies\<^sub>r _\<close> [81,81] 80)
+  | Finally_ltlr \<open>'a ltlr\<close>                  (\<open>F\<^sub>r _\<close> [88] 87)
+  | Until_ltlr \<open>'a ltlr\<close> \<open>'a ltlr\<close>          (\<open>_ U\<^sub>r _\<close> [84,84] 83)
 
 datatype 'a actl_star =
-  all_actl_star 'a                              ("A'(_')")
-  | and_actl_star "'a actl_star" "'a actl_star" ("_ && _" [82,82] 81)
-  | not_actl_star "'a actl_star"                ("~~ _" [88] 87)
+  all_actl_star 'a                              (\<open>A'(_')\<close>)
+  | and_actl_star \<open>'a actl_star\<close> \<open>'a actl_star\<close> (\<open>_ && _\<close> [82,82] 81)
+  | not_actl_star \<open>'a actl_star\<close>                (\<open>~~ _\<close> [88] 87)
 
 primrec mc_ltlr :: \<open>'ap set word \<Rightarrow> 'ap ltlr \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>r _\<close> [80,80] 80) 
   where
     \<open>\<pi> \<Turnstile>\<^sub>r prop\<^sub>r(a) = (a \<in> \<pi> 0)\<close>
-  | "\<pi> \<Turnstile>\<^sub>r true\<^sub>r = True"
-  | "\<pi> \<Turnstile>\<^sub>r false\<^sub>r = False"
+  | \<open>\<pi> \<Turnstile>\<^sub>r true\<^sub>r = True\<close>
+  | \<open>\<pi> \<Turnstile>\<^sub>r false\<^sub>r = False\<close>
   | \<open>\<pi> \<Turnstile>\<^sub>r \<phi> and\<^sub>r \<psi> = (\<pi> \<Turnstile>\<^sub>r \<phi> \<and> \<pi> \<Turnstile>\<^sub>r \<psi>)\<close>
   | \<open>\<pi> \<Turnstile>\<^sub>r \<phi> implies\<^sub>r \<psi> = (\<pi> \<Turnstile>\<^sub>r \<phi> \<longrightarrow> \<pi> \<Turnstile>\<^sub>r \<psi>)\<close>
   | \<open>\<pi> \<Turnstile>\<^sub>r F\<^sub>r \<phi> = (\<exists>i. suffix i \<pi> \<Turnstile>\<^sub>r \<phi>)\<close> 
@@ -61,8 +64,7 @@ lemma actl_star_dne:
 
 end
 
-subsection \<open>General Woulds semantics can not be expressed through ACTL*.\<close>
-
+\<comment>\<open>Preliminary work to simplify evaluation of \emph{General Woulds} semantics.\<close>
 lemma (in preordered_counterfactual_structure) simplify_general_would:
   shows \<open>{w. (\<forall> w1. (w \<le><w> w1 \<and> w1 \<in> \<phi>) \<longrightarrow> 
           (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> (w3 \<in> UNIV - \<phi> \<union> \<psi>))))} = \<phi> \<box>\<rightarrow>\<hungarumlaut> \<psi>\<close>
@@ -71,11 +73,11 @@ lemma (in preordered_counterfactual_structure) simplify_general_would:
 datatype world = w_true | w_false | w1 | w2 | w3
 datatype ap = \<phi> | \<psi>
 
-text \<open>The following two functions describe a setting in which "if $\varphi$ would be the case, then 
+text \<open>The following two functions describe a setting in which "if $\varphi$ would be the case, then
       $\psi$ would be the case holds for $w_{true}$ but not for $w_{false}$. ACTL* is not able
       to distinguish between those two worlds.\<close>
 
-fun count_access :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80) 
+fun count_access :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> (\<open>_ \<le><_> _\<close> [70, 70, 70] 80) 
   where 
     \<open>count_access w_true _ w_true = True\<close>
   | \<open>count_access w_false _ w_false = True\<close>
@@ -104,9 +106,7 @@ primrec atomic_truth :: \<open>world \<Rightarrow> ap set\<close> (\<open>\<bull
   | \<open>atomic_truth w3 = {\<phi>}\<close>
 
 locale counterexample_actl_star =
-  preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>count_access\<close> 
-
-begin
+  preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>count_access\<close> begin
 
 notation general_would (\<open>_ \<box>\<rightarrow>\<hungarumlaut> _\<close> [70, 70] 100)  
 notation sem_actl_star  (\<open>\<lbrakk> _ \<rbrakk>\<close> 80)
@@ -178,7 +178,7 @@ proof -
     using simplify_general_would phi_semantics psi_semantics by metis
 qed
 
-subsection \<open>Paths for $w_{true}$ and $w_{false}$ equal.\<close>
+subsection \<open>The set of paths for $w_{true}$ and $w_{false}$ are equal.\<close>
 
 lemma no_single_psi_world:
   shows \<open>\<forall> i1. \<bullet> i1 \<noteq> {\<psi>}\<close> 
@@ -350,7 +350,7 @@ proof
       then show \<open>\<exists>i1 i2. i1 \<le><w_true> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m))\<close> 
         by (metis \<open>\<bullet>i2 = {}\<close> fixed_i1_i2 atomic_truth.simps(1) atomic_truth.simps(3) 
             atomic_truth.simps(4) count_access.simps(6) count_access.simps(7) 
-            world_dependent_kripke_structure_axioms world_dependent_kripke_structure_def)
+            world_dependant_kripke_structure_axioms world_dependant_kripke_structure_def)
      next
        assume phi_or_phi_and_psi: \<open>\<bullet>i2 = {\<phi>} \<or> \<bullet>i2 = {\<phi>, \<psi>}\<close>
        show \<open>\<exists>i1 i2. i1 \<le><w_true> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m))\<close>
@@ -439,7 +439,7 @@ next
   then show ?case by simp
 qed
 
-subsection \<open>General Woulds semantics can not be mapped to ACTL*\<close>
+subsection \<open>General Woulds semantics can not be expressed by ACTL*\<close>
 
 lemma general_would_not_in_actl_star:
   fixes

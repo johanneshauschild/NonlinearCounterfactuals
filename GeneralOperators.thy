@@ -10,7 +10,7 @@ subsection \<open>Defining the operators\<close>
 text \<open>Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023} suggest to drop the assumption that every world is accessible 
       from the actual world by not including inaccessible worlds in $\leq_w$. Small modifications on 
       Universal Would and Existential Might make it possible to depict their semantics 
-      in this more general structure\<close>
+      without assuming \emph{total accessibility}.\<close>
 
 definition (in preordered_counterfactual_structure) general_would ::
   \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (\<open>_ \<box>\<rightarrow>\<hungarumlaut> _\<close> [70, 70] 100) 
@@ -90,6 +90,11 @@ next
     using general_would_def preordered_counterfactual_structure_axioms by auto
 qed
 
+text \<open>While we are able to deliver a set comprehension capturing the semantics for 
+      \emph{General More Possible} as well as \emph{General At least as Possible}
+      The big difference from the \emph{set comprehensions} for their Lewisian counterparts 
+      suggests, that their semantics are strongly tied to the \emph{linearity} assumption.\<close>
+
 lemma (in preordered_counterfactual_structure) general_more_possible_follows_definition:
   shows \<open>w \<in> \<phi> \<prec>\<hungarumlaut> \<psi> \<longleftrightarrow> w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi>
          \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)))}\<close>
@@ -148,6 +153,13 @@ next
 qed
 
 subsection \<open>Comparison to Lewis Operators\<close>
+
+text \<open>Finally, we are able to show, that the generalised operators meet their Lewisian counterparts
+      under the \emph{linearity} assumption. The same holds for Finkbeiner and Sibers operators 
+      under the emph{total accessibility} assumption.
+      For any of the Lewisian operators, it can be shown by counterexample, that they miss their 
+      (likely) intended semantics being evaluated under the base assumptions.
+      The same holds for Finkbeiner and Sibers operators.\<close>
 
 lemma (in lewisian_structure) would_equivalent_to_general_would:
   shows

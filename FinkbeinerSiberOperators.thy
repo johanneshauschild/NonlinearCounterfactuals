@@ -38,8 +38,8 @@ qed
 subsection \<open>Equivalence under total accessibility and linearity\<close>
 
 text \<open>As shown by Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023}, 
-      "Universal Would" and "Existential Might" are equivalent to Lewis version of these operators, 
-      assuming total accessibility linearity\<close>
+      \emph{Universal Would} and \emph{Existential Might} are equivalent to Lewis version of these operators, 
+      assuming total accessibility and linearity\<close>
 
 lemma (in total_accessible_lewisian_structure) would_equal_to_universal_would:
   shows \<open>w \<in> \<phi> \<box>\<rightarrow> \<psi> \<longleftrightarrow> w \<in> \<phi> \<box>\<rightarrow>\<acute> \<psi>\<close>
