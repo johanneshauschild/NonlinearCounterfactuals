@@ -11,7 +11,7 @@ theories
     LewisOperators
     FinkbeinerSiberOperators
     GeneralOperators
-    ACTLStar
+    CTLStar
 document_files
   "root.tex"
   "root.bib"
