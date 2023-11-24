@@ -69,7 +69,7 @@ end
 \<comment>\<open>Preliminary work to simplify evaluation of \emph{General Woulds} semantics.\<close>
 lemma (in preordered_counterfactual_structure) simplify_general_would:
   shows \<open>{w. (\<forall> W1. (w \<le><w> W1 \<and> W1 \<in> Phi) \<longrightarrow> 
-          (\<exists> W2. W2 \<le><w> W1 \<and> W2 \<in> Phi \<and> (\<forall> W3. W3 \<le><w> W2 \<longrightarrow> (W3 \<in> UNIV - Phi \<union> Psi))))} = Phi \<box>\<rightarrow>\<hungarumlaut> Psi\<close>
+          (\<exists> W2. W2 \<le><w> W1 \<and> W2 \<in> Phi \<and> (\<forall> W3. W3 \<le><w> W2 \<longrightarrow> (W3 \<in> UNIV - Phi \<union> Psi))))} = Phi \<box>\<rightarrow> Psi\<close>
   using general_would_def by auto
 
 datatype world = W_true | W_false | W1 | W2 | W3
@@ -110,7 +110,7 @@ primrec atomic_truth :: \<open>world \<Rightarrow> ap set\<close> (\<open>\<bull
 locale counterexample_ctl_star =
   preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>count_access\<close> begin
 
-notation general_would (\<open>_ \<box>\<rightarrow>\<hungarumlaut> _\<close> [70, 70] 100)  
+notation general_would (\<open>_ \<box>\<rightarrow> _\<close> [70, 70] 100)  
 notation sem_ctl_star  (\<open>\<lbrakk> _ \<rbrakk>\<close> 80)
 
 \<comment>\<open>The key difference between $w_{true}$ and $w_{false}$. Facilitating \emph{metis} proofs.\<close>
@@ -151,7 +151,7 @@ next
 qed
 
 lemma W_true_in_would_sem:
-  shows \<open>W_true \<in> {w. Phi \<in> \<bullet> w} \<box>\<rightarrow>\<hungarumlaut> {w. Psi \<in> \<bullet> w}\<close>
+  shows \<open>W_true \<in> {w. Phi \<in> \<bullet> w} \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close>
 proof - 
   have \<open>(\<forall> W1t. (W_true \<le><W_true> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> (\<exists> W2t. W2t \<le><W_true> W1t \<and> 
         W2t \<in> {W1,W2,W3} \<and> (\<forall> W3t. W3t \<le><W_true> W2t \<longrightarrow> (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))\<close> 
@@ -161,12 +161,12 @@ proof -
   hence \<open>W_true \<in> {w. (\<forall> W1t. (w \<le><w> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> (\<exists> W2t. W2t \<le><w> W1t \<and> 
          W2t \<in> {W1,W2,W3} \<and> (\<forall> W3t. W3t \<le><w> W2t \<longrightarrow> (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))}\<close>
     by blast 
-  thus \<open>W_true \<in> {w. Phi \<in> \<bullet> w}  \<box>\<rightarrow>\<hungarumlaut> {w. Psi \<in> \<bullet> w}\<close> 
+  thus \<open>W_true \<in> {w. Phi \<in> \<bullet> w}  \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close> 
     using simplify_general_would phi_semantics psi_semantics by metis
 qed
 
 lemma W_false_not_in_would_sem:
-  shows \<open>W_false \<notin> {w. Phi \<in> \<bullet> w} \<box>\<rightarrow>\<hungarumlaut> {w. Psi \<in> \<bullet> w}\<close>
+  shows \<open>W_false \<notin> {w. Phi \<in> \<bullet> w} \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close>
 proof -
   have  \<open>\<not>(\<forall> W1t. (W_false \<le><W_false> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> 
          (\<exists> W2t. W2t \<le><W_false> W1t \<and> W2t \<in> {W1,W2,W3} \<and> 
@@ -176,7 +176,7 @@ proof -
   hence \<open>W_false \<notin> {w. (\<forall> W1t. (w \<le><w> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> 
          (\<exists> W2t. W2t \<le><w> W1t \<and> W2t \<in> {W1,W2,W3} \<and> (\<forall> W3t. W3t \<le><w> W2t \<longrightarrow> 
          (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))}\<close> by blast
-  thus \<open>W_false \<notin> {w. Phi \<in> \<bullet> w}  \<box>\<rightarrow>\<hungarumlaut> {w. Psi \<in> \<bullet> w}\<close> 
+  thus \<open>W_false \<notin> {w. Phi \<in> \<bullet> w}  \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close> 
     using simplify_general_would phi_semantics psi_semantics by metis
 qed
 
@@ -447,9 +447,9 @@ subsection \<open>General Woulds semantics can not be expressed by CTL*\<close>
 lemma general_would_not_in_ctl_star:
   fixes
     ctl_star_formula :: \<open>ap ltlr ctl_star\<close>
-  shows \<open>{w. Phi \<in> \<bullet> w} \<box>\<rightarrow>\<hungarumlaut> {w. Psi \<in> \<bullet> w} \<noteq> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
+  shows \<open>{w. Phi \<in> \<bullet> w} \<box>\<rightarrow> {w. Psi \<in> \<bullet> w} \<noteq> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
 proof (rule ccontr)
-  assume semantics_eq: \<open>\<not> {w. Phi \<in> \<bullet>w} \<box>\<rightarrow>\<hungarumlaut> {w. Psi \<in> \<bullet>w} \<noteq> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
+  assume semantics_eq: \<open>\<not> {w. Phi \<in> \<bullet>w} \<box>\<rightarrow> {w. Psi \<in> \<bullet>w} \<noteq> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
   hence W_true_in_semantics:\<open>W_true \<in> \<lbrakk> ctl_star_formula \<rbrakk>\<close> using W_true_in_would_sem by blast
   from semantics_eq have \<open>W_false \<notin> \<lbrakk> ctl_star_formula \<rbrakk>\<close> using W_false_not_in_would_sem 
     by fastforce 
