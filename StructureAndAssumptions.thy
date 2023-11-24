@@ -14,10 +14,10 @@ locale world_dependant_kripke_structure =
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
 
-text \<open>This structure is meant to implement a Kripke @{cite Kripke1963} structure.
-      The name "accessibility" for the functions encoding the worlds relation is due to
-      the fact, that it is reinterpreted to state the fact "$w_1$ is more accessible from
-      $w$ than $w_2$" in the following \emph{locales}.
+text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
+      Katoen cite\<open>ctls_def\<close>. The name "accessibility" for the function encoding the similarity 
+      between worlds is due to the fact, that it is reinterpreted to state the fact "$w_1$ is more 
+      accessible from $w$ than $w_2$" in the following \texttt{locales}.
 
       We dropped the set of initial states, allowing every state to be an initial one.\<close>
 
@@ -26,15 +26,15 @@ locale preordered_counterfactual_structure = world_dependant_kripke_structure ap
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
     accessibility :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool" ("_ \<le><_> _" [70, 70, 70] 80) +
   assumes
-    \<comment>\<open>Lewis' @{cite lewisCounterfactuals1973}  as well as Finkbeiner and Sibers 
-      @{cite finkbeinerCounterfactualsModuloTemporal2023}  structure are transitive\<close>
+    \<comment>\<open>Lewis' cite\<open>lewisCounterfactuals1973\<close>  as well as Finkbeiner and Sibers 
+      cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close> structure are transitive\<close>
     transitive [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w2 \<le><w> w3\<rbrakk> \<Longrightarrow> w1 \<le><w> w3\<close>  and
     \<comment>\<open>We assume, that any two worlds, which are comparable in respect to a world, are also 
       accessible from that world:\<close>
     meaningful_acessibility [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w1 \<noteq> w2\<rbrakk> \<Longrightarrow> w \<le><w> w1 \<and> w \<le><w> w2\<close> 
 
-text \<open>Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023}, 
-      as well as Lewis @{cite lewisCounterfactuals1973}, require $\leq_w$ to be minimal,
+text \<open>Finkbeiner and Siber cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>, 
+      as well as Lewis cite\<open>lewisCounterfactuals1973\<close>, require $\leq_w$ to be minimal,
       meaning there exists no World $w'$ different from $w$ for which $w' \leq_w w$ holds.
       Conducting the proofs, this assumption turned out to be spurious. 
       Hence it is not included in any of the locales.\<close>
@@ -98,10 +98,17 @@ lemma (in preordered_counterfactual_structure) possible_phi:
   (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>))) \<Longrightarrow> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi>)\<close> 
   by (metis meaningful_acessibility)
 
+(*Unnötig? 2023-11-23 
 lemma (in preordered_counterfactual_structure) subset_can_be_generalized:
   shows \<open>(\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)) \<Longrightarrow> 
   (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> (\<phi> \<union> \<psi>) \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - (\<phi> \<union> \<psi>) \<union> (UNIV - \<psi>)))\<close>
-  by (metis Compl_eq_Diff_UNIV Compl_iff Un_iff)
+  by (metis Compl_eq_Diff_UNIV Compl_iff Un_iff)*)
+
+lemma (in preordered_counterfactual_structure) subset_generalized:
+  shows\<open>(\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+        (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>))) \<longrightarrow> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<longrightarrow>
+      (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<union> \<psi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - (\<phi> \<union> \<psi>) \<union> (UNIV - \<psi>))))\<close>
+  by (metis DiffI UNIV_I Un_iff local.reflexive local.transitive meaningful_acessibility)
 
 lemma (in preordered_counterfactual_structure) simplify_general_strong_would:
   shows \<open>(\<forall> w1. w \<le><w> w1 \<and> w1 \<in> (\<phi> \<union> \<psi>) \<longrightarrow> 
@@ -142,7 +149,14 @@ next
           (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
   thus \<open>(\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
         (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))\<close>
-    by (metis lewisian_structure.linearity lewisian_structure_axioms local.transitive)
+    by (metis linearity transitive)
 qed
+
+lemma (in preordered_counterfactual_structure) phi_or_psi_to_phi:
+  \<open>\<not>(\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<psi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<and> 
+  (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>))) \<longleftrightarrow> 
+  (\<nexists>w1. w \<le><w> w1 \<and> w1 \<in> \<psi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> 
+   (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>)))\<close>
+  by (auto, metis reflexive transitive meaningful_acessibility)
 
 end
