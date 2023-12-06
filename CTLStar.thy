@@ -1,460 +1,431 @@
-section \<open>Relation of CTL* to the counterfactual Would Operator\<close>
-
 theory CTLStar
 
 imports 
   GeneralOperators
-  Main "HOL-Library.Omega_Words_Fun"
+  Main "HOL-Library.Omega_Words_Fun" 
+
 begin
 
-context world_dependant_kripke_structure begin
+section \<open>Relation between expressive power of CTL* and Counterfactual Operators\<close>
 
-subsection \<open>Definition of a reduced CTL* version\<close>
+context world_dependant_kripke_structure
 
-text \<open>We give a formalisation of a reduced version of the logic CTL* described by Emerson, Allen and 
-      Halpern @{cite Emerson1983}. The existential quantifier over paths  can be substituted by a 
-      negated quantifier over all paths leaving us with the Logic CTL*. 
-      Our interpretation of CTL* path formulas is taken from the LTL formalisation done by Sickert 
-      and Seidel @{cite LTLAFP}.\<close>
+begin
 
-definition is_path :: \<open>'i \<Rightarrow> 'ap set word \<Rightarrow> bool\<close> 
-  where \<open>is_path w \<pi> \<equiv> \<pi> 0 = ap(w) \<and> (\<forall> n. (\<exists> i1 i2. (i1 \<le><w> i2) \<and> (ap(i1) = \<pi> n) 
-        \<and> (ap(i2) = \<pi> (Suc n))))\<close>
+text \<open>Path definition taken from the Isabelle/HOL Tutorial cite\<open>isabellebook2002\<close>
+      Usage of $\omega$-words inspired by cite\<open>sickertltl\<close>\<close>
 
-definition paths :: \<open>'i \<Rightarrow> 'ap set word set\<close>
-  where \<open>paths w \<equiv> {\<pi>. is_path w \<pi>}\<close>
+definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close> 
+  where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-\<comment>\<open>We can abstract from concrete semantics of the path formulas in later proofs. Hence a reduced
-  implementation is sufficient.\<close>
-datatype 'a ltlr =
-  Prop_ltlr 'a                              (\<open>prop\<^sub>r'(_')\<close>)
-  | True_ltlr                               (\<open>true\<^sub>r\<close>)
-  | False_ltlr                              (\<open>false\<^sub>r\<close>)
-  | And_ltlr  \<open>'a ltlr\<close> \<open>'a ltlr\<close>           (\<open>_ and\<^sub>r _\<close> [82,82] 81)
-  | Implies_ltlr \<open>'a ltlr\<close> \<open>'a ltlr\<close>        (\<open>_ implies\<^sub>r _\<close> [81,81] 80)
-  | Finally_ltlr \<open>'a ltlr\<close>                  (\<open>F\<^sub>r _\<close> [88] 87)
-  | Until_ltlr \<open>'a ltlr\<close> \<open>'a ltlr\<close>          (\<open>_ U\<^sub>r _\<close> [84,84] 83)
+text \<open>Definition of the logic $CTL^*$ as in cite\<open>modelcheckingbaierkatoen\<close>\<close>
 
-datatype 'a ctl_star =
-  all_ctl_star 'a                              (\<open>A'(_')\<close>)
-  | and_ctl_star \<open>'a ctl_star\<close> \<open>'a ctl_star\<close> (\<open>_ && _\<close> [82,82] 81)
-  | not_ctl_star \<open>'a ctl_star\<close>                (\<open>~~ _\<close> [88] 87)
+datatype 'a state_formula =  
+  Prop_state 'a ("prop'(_')")
+  | True_state  ("true")
+  | And_state \<open>'a state_formula\<close> \<open>'a state_formula\<close> (\<open>_ && _ \<close> [82,82] 81)
+  | Neg_state \<open>'a state_formula\<close> (\<open>~~ _ \<close> [100])
+  | Exists_state \<open>'a path_formula\<close> (\<open>EE _\<close>)
+  and 'a path_formula = 
+  Is \<open>'a state_formula\<close>
+  | Neg_path \<open>'a path_formula\<close> (\<open>neg _ \<close> [100])
+  | And_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ and _\<close> [82,82] 81) 
+  | Next_path \<open>'a path_formula\<close> (\<open>\<circle> _\<close>)
+  | Until_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ UU _\<close> [82,82] 81)
 
-primrec mc_ltlr :: \<open>'ap set word \<Rightarrow> 'ap ltlr \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>r _\<close> [80,80] 80) 
+primrec 
+  mc_state_formula :: \<open>'i \<Rightarrow> 'ap state_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>s _\<close> [82,82] 81)  and
+  mc_path_formula :: \<open>'i word \<Rightarrow> 'ap path_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>p _\<close> [82,82] 81)
   where
-    \<open>\<pi> \<Turnstile>\<^sub>r prop\<^sub>r(a) = (a \<in> \<pi> 0)\<close>
-  | \<open>\<pi> \<Turnstile>\<^sub>r true\<^sub>r = True\<close>
-  | \<open>\<pi> \<Turnstile>\<^sub>r false\<^sub>r = False\<close>
-  | \<open>\<pi> \<Turnstile>\<^sub>r Phi and\<^sub>r Psi = (\<pi> \<Turnstile>\<^sub>r Phi \<and> \<pi> \<Turnstile>\<^sub>r Psi)\<close>
-  | \<open>\<pi> \<Turnstile>\<^sub>r Phi implies\<^sub>r Psi = (\<pi> \<Turnstile>\<^sub>r Phi \<longrightarrow> \<pi> \<Turnstile>\<^sub>r Psi)\<close>
-  | \<open>\<pi> \<Turnstile>\<^sub>r F\<^sub>r Phi = (\<exists>i. suffix i \<pi> \<Turnstile>\<^sub>r Phi)\<close> 
-  | \<open>\<pi> \<Turnstile>\<^sub>r Phi U\<^sub>r Psi = (\<exists>i. suffix i \<pi> \<Turnstile>\<^sub>r Psi \<and> (\<forall>j<i. suffix j \<pi> \<Turnstile>\<^sub>r Phi))\<close>
+  \<open>w \<Turnstile>\<^sub>s prop(a) = (a \<in> (ap w))\<close>
+| \<open>w \<Turnstile>\<^sub>s true = True\<close>
+| \<open>w \<Turnstile>\<^sub>s (~~ \<phi>) = (\<not>(w \<Turnstile>\<^sub>s \<phi>))\<close>
+| \<open>w \<Turnstile>\<^sub>s (\<phi> && \<psi>) = ((w \<Turnstile>\<^sub>s \<phi>) \<and> (w \<Turnstile>\<^sub>s \<psi>))\<close>
+| \<open>w \<Turnstile>\<^sub>s (EE \<phi>) = (\<exists> \<pi>. is_path w \<pi> \<and> \<pi> \<Turnstile>\<^sub>p \<phi>)\<close> 
+| \<open>\<pi> \<Turnstile>\<^sub>p(Is \<phi>) = (\<pi> 0) \<Turnstile>\<^sub>s \<phi>\<close>
+| \<open>\<pi> \<Turnstile>\<^sub>p neg \<phi> = (\<not>\<pi> \<Turnstile>\<^sub>p \<phi>)\<close>
+| \<open>\<pi> \<Turnstile>\<^sub>p (\<phi> and \<psi>) = (\<pi> \<Turnstile>\<^sub>p \<phi> \<and> \<pi> \<Turnstile>\<^sub>p \<psi>)\<close>
+| \<open>\<pi> \<Turnstile>\<^sub>p(\<circle> \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
+| \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
-primrec sem_ctl_star :: \<open>'ap ltlr ctl_star \<Rightarrow> 'i set\<close> (\<open>\<lbrakk> _ \<rbrakk>\<close> 80)  
-  where 
-    \<open>\<lbrakk> A(Phi) \<rbrakk> = {w. \<forall> \<pi>. is_path w \<pi> \<longrightarrow> \<pi> \<Turnstile>\<^sub>r Phi}\<close>
-  | \<open>\<lbrakk> (~~ Phi) \<rbrakk> = UNIV - sem_ctl_star Phi\<close>  
-  | \<open>\<lbrakk> (Phi && Psi) \<rbrakk>= (sem_ctl_star Phi) \<inter> (sem_ctl_star Psi)\<close>
+text \<open>Bisimulation  inspired by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> and by Pohlmann 
+      cite\<open>pohlmannbisim\<close>\<close>
 
-\<comment>\<open>The double negation elimination rule holds for our interpretation of CTL*.\<close>
-lemma ctl_star_dne:
-  fixes
-    Phi_ctl_star :: \<open>'ap ltlr ctl_star\<close>
-  shows 
-    \<open>\<lbrakk>~~ (~~ Phi_ctl_star)\<rbrakk> = \<lbrakk>Phi_ctl_star\<rbrakk>\<close>
-  by (simp add: Diff_Diff_Int)
+definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
+  where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
+    (ap w = ap v) \<and>
+    (\<forall> w'. w \<le><w> w' \<longrightarrow> (\<exists> v'. v \<le><v> v' \<and> R w' v')) \<and>
+    (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R v' w'))\<close> 
+
+text \<open>Definition taken from Pohlmann cite\<open>pohlmannbisim\<close>\<close>
+
+definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
+  where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
+
+lemma existential_path_non_dist:
+  assumes
+    \<open>\<And> \<pi>1 \<pi>2. (\<forall>i. \<pi>1 i \<leftrightarrow> \<pi>2 i) \<longrightarrow> \<pi>1 \<Turnstile>\<^sub>p x = \<pi>2 \<Turnstile>\<^sub>p x\<close> and
+    \<comment>\<open>The path lifting lemma. Lemma 7.5 in cite\<open>modelcheckingbaierkatoen\<close>\<close>
+    path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
+      (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>
+  shows \<open>w \<leftrightarrow> v \<Longrightarrow>  w \<Turnstile>\<^sub>s (EE x) \<Longrightarrow> v \<Turnstile>\<^sub>s (EE x)\<close>
+proof -
+  assume bisim: \<open>w \<leftrightarrow> v\<close>
+  assume w_sats: \<open>w \<Turnstile>\<^sub>s EE x\<close>
+  then obtain \<pi>1 where  \<open>is_path w \<pi>1 \<and> (\<pi>1  \<Turnstile>\<^sub>p x)\<close> using mc_state_formula.simps(5) by blast
+  then obtain \<pi>2 where \<open>is_path v \<pi>2 \<and> (\<forall> i. (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>  
+    using bisim assms path_lifting by blast
+  hence \<open>\<pi>1 \<Turnstile>\<^sub>p x = \<pi>2 \<Turnstile>\<^sub>p x\<close> using assms by blast
+  thus \<open>v \<Turnstile>\<^sub>s (EE x)\<close> 
+    using \<open>is_path v \<pi>2 \<and> (\<forall>i ia. \<pi>1 ia \<leftrightarrow> \<pi>2 ia)\<close> \<open>is_path w \<pi>1 \<and> \<pi>1 \<Turnstile>\<^sub>p x\<close> by auto
+qed
+
+text \<open>This proof is a Isabelle implementation of the proof, that bisimulation is finer than $CTL^*$,
+      As shown by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> in Lemma 7.26\<close>
+
+lemma bisimulation_finer_than_ctls:
+  fixes 
+    \<Phi> :: \<open>'ap state_formula\<close> and
+    \<phi> :: \<open>'ap path_formula\<close> 
+  assumes
+    \<comment>\<open>Bisimulation is a symmetric property. Lemma 7.4 in cite\<open>modelcheckingbaierkatoen\<close>\<close>
+    bisim_sym: \<open>\<And> w v. w \<leftrightarrow> v \<Longrightarrow> v \<leftrightarrow> w\<close> and 
+    path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
+      (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
+  shows
+    \<open>\<And> w v. w \<leftrightarrow> v \<longrightarrow> (w  \<Turnstile>\<^sub>s \<Phi> \<longleftrightarrow> v \<Turnstile>\<^sub>s \<Phi>)\<close>
+    and \<open>\<And> \<pi>1 \<pi>2. (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i) \<longrightarrow> \<pi>1 \<Turnstile>\<^sub>p \<phi> \<longleftrightarrow> \<pi>2 \<Turnstile>\<^sub>p \<phi>\<close>
+proof (induct \<Phi> and \<phi>)
+  case (Prop_state x)
+  then show ?case using bisimilar_def bisimulation_def by auto
+next
+  case True_state
+  then show ?case by simp
+next
+  case (And_state x1 x2)
+  then show ?case by force
+next
+  case (Neg_state x)
+  then show ?case using mc_state_formula.simps(3) by blast
+next
+  case (Exists_state x)
+  show ?case using bisim_sym path_lifting 
+    using Exists_state existential_path_non_dist by blast  
+next
+  case (Is x)
+  then show ?case using mc_path_formula.simps(1) by blast
+next
+  case (Neg_path x)
+  then show ?case using mc_path_formula.simps(2) by blast
+next
+  case (And_path x1 x2)
+  then show ?case by simp
+next
+  thm mc_path_formula.simps(4)
+  case (Next_path x)  
+  then show ?case by force 
+next
+  case (Until_path x1 x2)
+  then show ?case by (metis mc_path_formula.simps(5) suffix_nth)
+qed
 
 end
 
-\<comment>\<open>Preliminary work to simplify evaluation of \emph{General Woulds} semantics.\<close>
-lemma (in preordered_counterfactual_structure) simplify_general_would:
-  shows \<open>{w. (\<forall> W1. (w \<le><w> W1 \<and> W1 \<in> Phi) \<longrightarrow> 
-          (\<exists> W2. W2 \<le><w> W1 \<and> W2 \<in> Phi \<and> (\<forall> W3. W3 \<le><w> W2 \<longrightarrow> (W3 \<in> UNIV - Phi \<union> Psi))))} = Phi \<box>\<rightarrow> Psi\<close>
-  using general_would_def by auto
+subsection \<open>Example \enph{Counterfactual} Structure\<close>
 
 datatype world = W_true | W_false | W1 | W2 | W3
-datatype ap = Phi | Psi
+datatype ap = B | F
 
-text \<open>The following two functions describe a setting in which "if $\varphi$ would be the case, then
-      $\psi$ would be the case holds for $w_{true}$ but not for $w_{false}$. CTL* is not able
-      to distinguish between those two worlds.\<close>
-
-fun count_access :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> (\<open>_ \<le><_> _\<close> [70, 70, 70] 80) 
+fun cf_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<lessapprox><_> _" [70, 70, 70] 80) 
   where 
-    \<open>count_access W_true _ W_true = True\<close>
-  | \<open>count_access W_false _ W_false = True\<close>
-  | \<open>count_access W1 _ W1 = True\<close>
-  | \<open>count_access W2 _ W2 = True\<close>
-  | \<open>count_access W3 _ W3 = True\<close>
-  | \<open>count_access W_true W_true W1 = True\<close>
-  | \<open>count_access W_true W_true W2 = True\<close>
-  | \<open>count_access W_false W_false W1 = True\<close>
-  | \<open>count_access W_false W_false W2 = True\<close>
-  | \<open>count_access W_false W_false W3 = True\<close>
-  | \<open>count_access W1 W_true W2 = True\<close>
-  | \<open>count_access W1 W_false W2 = True\<close>
-  | \<open>count_access W_true _ _ = False\<close>
-  | \<open>count_access W_false _ _ = False\<close>
-  | \<open>count_access W1 _ _ = False\<close>
-  | \<open>count_access W2 _ _ = False\<close>
-  | \<open>count_access W3 _ _ = False\<close>
+    \<open>cf_accessibility W_true _ W_true = True\<close>
+  | \<open>cf_accessibility W_false _ W_false = True\<close>
+  | \<open>cf_accessibility W1 _ W1 = True\<close>
+  | \<open>cf_accessibility W2 _ W2 = True\<close>
+  | \<open>cf_accessibility W3 _ W3 = True\<close>
+  | \<open>cf_accessibility W_true W_true W1 = True\<close>
+  | \<open>cf_accessibility W_true W_true W2 = True\<close>
+  | \<open>cf_accessibility W_false W_false W1 = True\<close>
+  | \<open>cf_accessibility W_false W_false W2 = True\<close>
+  | \<open>cf_accessibility W_false W_false W3 = True\<close>
+  | \<open>cf_accessibility W1 W_true W2 = True\<close>
+  | \<open>cf_accessibility W1 W_false W2 = True\<close>
+  | \<open>cf_accessibility W1 W1 W2 = True\<close>
+  | \<open>cf_accessibility W_true _ _ = False\<close> 
+  | \<open>cf_accessibility W_false _ _ = False\<close>
+  | \<open>cf_accessibility W1 _ _ = False\<close>
+  | \<open>cf_accessibility W2 _ _ = False\<close>
+  | \<open>cf_accessibility W3 _ _ = False\<close>
 
-primrec atomic_truth :: \<open>world \<Rightarrow> ap set\<close> (\<open>\<bullet>_\<close> [80])
+primrec atomic_truth :: \<open>world \<Rightarrow> ap set\<close> (\<open>\<L> _\<close> [80])
   where 
     \<open>atomic_truth W_true = {}\<close>
   | \<open>atomic_truth W_false = {}\<close>
-  | \<open>atomic_truth W1 = {Phi, Psi}\<close>
-  | \<open>atomic_truth W2 = {Phi}\<close>
-  | \<open>atomic_truth W3 = {Phi}\<close>
+  | \<open>atomic_truth W1 = {B, F}\<close>
+  | \<open>atomic_truth W2 = {B}\<close>
+  | \<open>atomic_truth W3 = {B}\<close>
 
-locale counterexample_ctl_star =
-  preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>count_access\<close> begin
+locale would_distiguishing_wt_wf =
+  preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>cf_accessibility\<close> 
+
+begin
 
 notation general_would (\<open>_ \<box>\<rightarrow> _\<close> [70, 70] 100)  
-notation sem_ctl_star  (\<open>\<lbrakk> _ \<rbrakk>\<close> 80)
 
-\<comment>\<open>The key difference between $w_{true}$ and $w_{false}$. Facilitating \emph{metis} proofs.\<close>
-lemma W3_not_accessible_from_W_true:
-  shows \<open>W_true \<le><W_true> W3 \<Longrightarrow> False\<close>
-  by auto 
-
-subsection \<open>General Would can differentiate between $w_{true}$ and $w_{false}$.\<close>
+lemma (in preordered_counterfactual_structure) simplify_general_would:
+  shows \<open>{w. (\<forall> w1. (w \<le><w> w1 \<and> w1 \<in> \<phi>) \<longrightarrow> 
+  (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> (w3 \<in> UNIV - \<phi> \<union> \<psi>))))} = \<phi> \<box>\<rightarrow> \<psi>\<close>
+  using general_would_def by auto
 
 lemma phi_semantics:
-  shows \<open>{w. Phi \<in> \<bullet> w} = {W1, W2, W3}\<close>
+  shows \<open>{w. B \<in> \<L> w} = {W1, W2, W3}\<close>
 proof 
-  show \<open>{w. Phi \<in> \<bullet>w} \<subseteq> {W1, W2, W3}\<close>
+  show \<open>{w. B \<in> \<L> w} \<subseteq> {W1, W2, W3}\<close>
   proof (rule ccontr)
-    assume \<open>\<not> {w. Phi \<in> \<bullet>w} \<subseteq> {W1, W2, W3}\<close>
-    hence \<open>W_true \<in> {w. Phi \<in> \<bullet>w} \<or> W_false \<in> {w. Phi \<in> \<bullet>w}\<close>
+    assume \<open>\<not> {w. B \<in> \<L> w} \<subseteq> {W1, W2, W3}\<close>
+    hence \<open>W_true \<in> {w. B \<in> \<L> w} \<or> W_false \<in> {w. B \<in> \<L> w}\<close>
       by (auto, metis atomic_truth.simps(1) atomic_truth.simps(2) empty_iff world.exhaust)
     thus \<open>False\<close> by simp
   qed
 next
-  show \<open>{W1, W2, W3} \<subseteq> {w. Phi \<in> \<bullet>w}\<close> by simp
+  show \<open>{W1, W2, W3} \<subseteq> {w. B \<in> \<L> w}\<close> by simp
 qed
 
 lemma psi_semantics:
-  shows \<open>{w. Psi \<in> \<bullet> w} = {W1}\<close>
+  shows \<open>{w. F \<in> \<L> w} = {W1}\<close>
 proof
-  show \<open>{w. Psi \<in> \<bullet>w} \<subseteq> {W1}\<close>
+  show \<open>{w. F \<in>  \<L> w} \<subseteq> {W1}\<close>
   proof (rule ccontr)
-    assume \<open>\<not> {w. Psi \<in> \<bullet>w} \<subseteq> {W1}\<close>
-    hence \<open>W_true \<in> {w. Psi \<in> \<bullet>w} \<or> W_false\<in> {w. Psi \<in> \<bullet>w} \<or> W2 \<in> {w. Psi \<in> \<bullet>w} \<or> W3 \<in> {w. Psi \<in> \<bullet>w}\<close>
+    assume \<open>\<not> {w. F \<in> \<L> w} \<subseteq> {W1}\<close>
+    hence \<open>W_true \<in> {w. F \<in> \<L> w} \<or> W_false\<in> {w. F \<in> \<L> w} \<or> W2 \<in> {w. F \<in> \<L> w} \<or> W3 \<in> {w. F \<in> \<L> w}\<close>
       by (auto, metis ap.simps(2) atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(4) 
           atomic_truth.simps(5) empty_iff singleton_iff world.exhaust)
     thus \<open>False\<close> by simp
   qed
 next
-  show \<open>{W1} \<subseteq> {w. Psi \<in> \<bullet>w}\<close>
-    by simp
+  show \<open>{W1} \<subseteq> {w. F \<in> \<L> w}\<close> by simp
 qed
 
+text \<open>The following two lemmata show, that $W_{true}$ and $W_false$ are distinguishable 
+      by \enquote*{General Would}\<close>
+
 lemma W_true_in_would_sem:
-  shows \<open>W_true \<in> {w. Phi \<in> \<bullet> w} \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close>
-proof - 
-  have \<open>(\<forall> W1t. (W_true \<le><W_true> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> (\<exists> W2t. W2t \<le><W_true> W1t \<and> 
-        W2t \<in> {W1,W2,W3} \<and> (\<forall> W3t. W3t \<le><W_true> W2t \<longrightarrow> (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))\<close> 
-    by (metis (no_types, opaque_lifting) Diff_iff count_access.simps(11) count_access.simps(44) 
-        emptyE inf_sup_aci(5) insert_iff insert_is_Un iso_tuple_UNIV_I local.reflexive 
-        meaningful_acessibility W3_not_accessible_from_W_true)
-  hence \<open>W_true \<in> {w. (\<forall> W1t. (w \<le><w> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> (\<exists> W2t. W2t \<le><w> W1t \<and> 
-         W2t \<in> {W1,W2,W3} \<and> (\<forall> W3t. W3t \<le><w> W2t \<longrightarrow> (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))}\<close>
+  shows \<open>W_true \<in> {w. B \<in> \<L> w} \<box>\<rightarrow> {w. F \<in> \<L> w}\<close>
+proof -
+  have \<open>(\<forall> w1. (W_true \<lessapprox><W_true> w1 \<and> w1 \<in> {W1,W2,W3}) \<longrightarrow> 
+        (\<exists> w2. w2 \<lessapprox><W_true> w1 \<and> w2 \<in> {W1,W2,W3} \<and> (\<forall> w3. w3 \<lessapprox><W_true> w2 \<longrightarrow> 
+        (w3 \<in> UNIV - {W1,W2,W3} \<union> {W1}))))\<close> 
+    by (metis (no_types, opaque_lifting) Diff_iff cf_accessibility.simps(11) 
+        cf_accessibility.simps(23) cf_accessibility.simps(44) emptyE insertE insertI1 insertI2 
+        insert_is_Un iso_tuple_UNIV_I local.reflexive meaningful_acessibility sup.commute)
+  hence \<open>W_true \<in> {w. (\<forall> w1. (w \<lessapprox><w> w1 \<and> w1 \<in> {W1,W2,W3}) \<longrightarrow> 
+  (\<exists> w2. w2 \<lessapprox><w> w1 \<and> w2 \<in> {W1,W2,W3} \<and> (\<forall> w3. w3 \<lessapprox><w> w2 \<longrightarrow> (w3 \<in> UNIV - {W1,W2,W3} \<union> {W1}))))}\<close>
     by blast 
-  thus \<open>W_true \<in> {w. Phi \<in> \<bullet> w}  \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close> 
+  thus \<open>W_true \<in> {w. B \<in> \<L> w}  \<box>\<rightarrow> {w. F \<in> \<L> w}\<close> 
     using simplify_general_would phi_semantics psi_semantics by metis
 qed
 
 lemma W_false_not_in_would_sem:
-  shows \<open>W_false \<notin> {w. Phi \<in> \<bullet> w} \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close>
+  shows \<open>W_false \<notin> {w. B \<in> \<L> w} \<box>\<rightarrow> {w. F \<in> \<L> w}\<close>
 proof -
-  have  \<open>\<not>(\<forall> W1t. (W_false \<le><W_false> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> 
-         (\<exists> W2t. W2t \<le><W_false> W1t \<and> W2t \<in> {W1,W2,W3} \<and> 
-         (\<forall> W3t. W3t \<le><W_false> W2t \<longrightarrow> (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))\<close>
-    by (metis Diff_iff Un_iff count_access.simps(10) count_access.simps(41) 
-        insertCI local.reflexive singleton_iff)
-  hence \<open>W_false \<notin> {w. (\<forall> W1t. (w \<le><w> W1t \<and> W1t \<in> {W1,W2,W3}) \<longrightarrow> 
-         (\<exists> W2t. W2t \<le><w> W1t \<and> W2t \<in> {W1,W2,W3} \<and> (\<forall> W3t. W3t \<le><w> W2t \<longrightarrow> 
-         (W3t \<in> UNIV - {W1,W2,W3} \<union> {W1}))))}\<close> by blast
-  thus \<open>W_false \<notin> {w. Phi \<in> \<bullet> w}  \<box>\<rightarrow> {w. Psi \<in> \<bullet> w}\<close> 
+  have  \<open>\<not>(\<forall> w1. (W_false \<lessapprox><W_false> w1 \<and> w1 \<in> {W1,W2,W3}) \<longrightarrow> 
+  (\<exists> w2. w2 \<lessapprox><W_false> w1 \<and> w2 \<in> {W1,W2,W3} \<and> (\<forall> w3. w3 \<lessapprox><W_false> w2 \<longrightarrow> 
+  (w3 \<in> UNIV - {W1,W2,W3} \<union> {W1}))))\<close>
+    by (metis Diff_iff Un_iff cf_accessibility.simps(10) cf_accessibility.simps(41) insertCI 
+        local.reflexive singleton_iff)
+  hence \<open>W_false \<notin> {w. (\<forall> w1. (w \<lessapprox><w> w1 \<and> w1 \<in> {W1,W2,W3}) \<longrightarrow> 
+  (\<exists> w2. w2 \<lessapprox><w> w1 \<and> w2 \<in> {W1,W2,W3} \<and> (\<forall> w3. w3 \<lessapprox><w> w2 \<longrightarrow> (w3 \<in> UNIV - {W1,W2,W3} \<union> {W1}))))}\<close> 
+    by blast
+  thus \<open>W_false \<notin> {w. B \<in> \<L> w}  \<box>\<rightarrow> {w. F \<in> \<L> w}\<close> 
     using simplify_general_would phi_semantics psi_semantics by metis
+qed 
+  
+end
+
+subsection \<open>Non $CTL^*$ distiguishable Worlds\<close>
+
+fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<lesssim><_> _" [70, 70, 70] 80) 
+  where 
+    \<open>ctls_accessibility W_true _ W_true = True\<close>
+  | \<open>ctls_accessibility W_false _ W_false = True\<close>
+  | \<open>ctls_accessibility W1 _ W1 = True\<close>
+  | \<open>ctls_accessibility W2 _ W2 = True\<close>
+  | \<open>ctls_accessibility W3 _ W3 = True\<close>
+  | \<open>ctls_accessibility W_true _ W1 = True\<close>
+  | \<open>ctls_accessibility W_true _ W2 = True\<close>
+  | \<open>ctls_accessibility W_false _ W1 = True\<close>
+  | \<open>ctls_accessibility W_false _ W2 = True\<close>
+  | \<open>ctls_accessibility W_false _ W3 = True\<close>
+  | \<open>ctls_accessibility W1 _ W2 = True\<close>
+  | \<open>ctls_accessibility W_true _ _ = False\<close> 
+  | \<open>ctls_accessibility W_false _ _ = False\<close>
+  | \<open>ctls_accessibility W1 _ _ = False\<close>
+  | \<open>ctls_accessibility W2 _ _ = False\<close>
+  | \<open>ctls_accessibility W3 _ _ = False\<close>
+
+locale ctls_not_distiguishing_wt_wf =
+  world_dependant_kripke_structure \<open>atomic_truth\<close> \<open>ctls_accessibility\<close> 
+
+begin
+
+notation mc_state_formula (\<open>_ \<Turnstile>\<^sub>s _\<close> [82,82] 81)
+notation bisimilar (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
+
+fun bisim_r :: \<open>world \<Rightarrow> world \<Rightarrow> bool\<close> 
+  where 
+    \<open>bisim_r W_true W_true = True\<close>
+  | \<open>bisim_r W_false W_false = True\<close>
+  | \<open>bisim_r W1 W1 = True\<close>
+  | \<open>bisim_r W2 W2 = True\<close>
+  | \<open>bisim_r W3 W3 = True\<close>
+  | \<open>bisim_r W2 W3 = True\<close>
+  | \<open>bisim_r W3 W2 = True\<close>
+  | \<open>bisim_r W_true W_false = True\<close>
+  | \<open>bisim_r W_false W_true = True\<close>
+  | \<open>bisim_r W_true _ = False\<close>
+  | \<open>bisim_r W_false _ = False\<close>
+  | \<open>bisim_r W1 _ = False\<close>
+  | \<open>bisim_r W2 _ = False\<close>
+  | \<open>bisim_r W3 _ = False\<close>
+
+lemma bism_r_has_eq_labels:
+  shows \<open>\<forall>w v. bisim_r w v \<longrightarrow> \<L> w = \<L> v\<close>
+proof -
+  have \<open>\<L> W_true = \<L> W_false\<close> using atomic_truth.simps by blast
+  moreover have \<open>\<L> W2 = \<L> W3\<close> using atomic_truth.simps by blast
+  ultimately show Atom_truths_sim: \<open>\<forall>w v. bisim_r w v \<longrightarrow> \<L> w = \<L> v\<close> 
+    using atomic_truth.simps apply auto using bisim_r.elims(2) apply force 
+    using bisim_r.elims(2) by force
 qed
 
-subsection \<open>The set of paths for $w_{true}$ and $w_{false}$ are equal.\<close>
+text \<open>A block of lemmata proving properties of bisimulation function for later use.\<close>
 
-lemma no_single_psi_world:
-  shows \<open>\<forall> i1. \<bullet> i1 \<noteq> {Psi}\<close> 
-  by (metis ap.simps(2) atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(3) 
-      atomic_truth.simps(4) atomic_truth.simps(5) insert_not_empty 
-      singleton_insert_inj_eq world.exhaust)
+lemma w_true_reaches_w1_w2_w_true:
+  shows \<open>W_true \<lesssim><W_true> w \<longrightarrow> w = W1 \<or> w = W2 \<or> w = W_true\<close>
+  using ctls_accessibility.elims(2) by blast
 
-lemma phi_only_phi_suc_on_path:
-  assumes 
-    path: \<open>is_path W_true \<pi>\<close> and
-    nth_place_phi: \<open>\<pi> n = {Phi}\<close>
-  shows \<open>\<pi> (Suc n) = {Phi}\<close> 
-proof (rule ccontr)
-  assume \<open>\<pi> (Suc n) \<noteq> {Phi}\<close>
-  from this path nth_place_phi have non_phi_suc:\<open>\<exists> i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = {Phi} \<and> \<bullet>i2 \<noteq> {Phi}\<close> 
-    by (metis is_path_def)
-  hence \<open>\<exists> i1. W2 \<le><W_true> i1 \<and> \<bullet> i1 \<noteq> {Phi}\<close> using atomic_truth.simps(4) 
-    by (metis atomic_truth.simps(1) atomic_truth.simps(2) count_access.simps(36) 
-        count_access.simps(37) empty_not_insert meaningful_acessibility 
-        W3_not_accessible_from_W_true world.exhaust)
-  thus \<open>False\<close> 
-    by (metis atomic_truth.simps(4) atomic_truth.simps(5) count_access.simps(42) 
-        count_access.simps(43) count_access.simps(44) world.exhaust)
-qed
+lemma w_false_reaches_w1_w2_w3_w_false:
+  shows \<open>W_false \<lesssim><W_false> w \<longrightarrow> w = W1 \<or> w = W2 \<or> w = W3 \<or> w = W_false\<close>
+  using ctls_accessibility.elims(2) by blast
 
-lemma phi_psi_only_phy_psi_or_phi_suc:
-  assumes 
-    path: \<open>is_path W_true \<pi>\<close> and
-    nth_place_phi_psi: \<open>\<pi> n = {Phi, Psi}\<close>
-  shows
-     \<open>\<pi> (Suc n) = {Phi,Psi} \<or> \<pi> (Suc n) = {Phi}\<close>
-proof (rule ccontr)
-  assume cont_assm: \<open>\<not> (\<pi> (Suc n) = {Phi, Psi} \<or> \<pi> (Suc n) = {Phi})\<close>
-  from this path nth_place_phi_psi have non_phi_suc: 
-    \<open>\<exists> i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = {Phi, Psi} \<and> \<bullet>i2 \<noteq> {Phi, Psi} \<and> \<bullet>i2 \<noteq> {Phi}\<close> by (metis is_path_def)
-  have phi_psi_only_W1: \<open>\<exists> i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = {Phi, Psi} \<longrightarrow> i1 = W1\<close> by blast
-  have \<open>\<exists> i1. W1 \<le><W_true> i1 \<longrightarrow> i1 = W1 \<and> i1 = W2\<close> by (meson count_access.simps(41))
-  from phi_psi_only_W1 this have \<open>\<exists> i1. W1 \<le><W_true> i1 \<and> \<bullet>i1 \<noteq>  {Phi, Psi} \<and> \<bullet>i1 \<noteq>  {Phi}\<close> 
-    using cont_assm atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(3) 
-        atomic_truth.simps(4) atomic_truth.simps(5) non_phi_suc nth_place_phi_psi 
-        path phi_only_phi_suc_on_path world.exhaust by (metis (full_types))
-  thus \<open>False\<close> 
-    by (metis atomic_truth.simps(3) atomic_truth.simps(4) atomic_truth.simps(5) 
-        count_access.simps(36) count_access.simps(37) world.exhaust)
-qed
+lemma w1_reaches_w1_w2:
+  shows \<open>W1 \<lesssim><W1> w \<longrightarrow> w = W1 \<or> w = W2\<close>
+  using ctls_accessibility.elims(2) by blast
 
-lemma after_start_eq_forth:
-  assumes
-    \<open>\<pi> 0 = \<bullet>W_true \<and>  \<pi> 0 = \<bullet>W_false\<close>
-  shows
-    \<open>(\<forall>n. \<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n)) \<Longrightarrow>
-     (\<forall>n. \<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n))\<close>
-proof 
-  assume is_W_true_path: \<open>\<forall>n. \<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n)\<close>
-  fix m
-  show \<open>\<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> m \<and> \<bullet>i2 = \<pi> (Suc m)\<close>
-  proof (induct m)
-    case 0
-    then show ?case 
-      by (metis (full_types) is_W_true_path assms reflexive count_access.simps(10) 
-          count_access.simps(8) count_access.simps(9) world.exhaust)
+lemma w2_reaches_w2:
+  shows \<open>W2 \<lesssim><W2> w \<longrightarrow> w = W2\<close>
+  using ctls_accessibility.elims(2) by blast
+
+lemma w3_reaches_w3:
+  shows \<open>W3 \<lesssim><W3> w \<longrightarrow> w = W3\<close>
+  using ctls_accessibility.elims(2) by blast
+
+lemma bisim_r_contains_lhs:
+  shows \<open>bisim_r w v \<longrightarrow> (w = W1) \<or> (w = W2) \<or> (w = W3) \<or> (w = W_false) \<or> (w = W_true)\<close>
+  using bisim_r.simps world.exhaust by blast
+
+lemma bisim_r_contains_rhs:
+  shows \<open>bisim_r w v \<longrightarrow> (v = W1) \<or> (v = W2) \<or> (v = W3) \<or> (v = W_false) \<or> (v = W_true)\<close>
+  using bisim_r.simps world.exhaust by blast
+
+lemma bisim_constraints_meant_for_bisim_worlds_lhs:
+  shows \<open>\<forall> v. P W1 v  \<and> P W2 v \<and> P W3 v \<and> P W_false v \<and> P W_true v \<Longrightarrow> \<forall> w v. bisim_r w v \<longrightarrow> P w v\<close> 
+  using bisim_r_contains_lhs by blast
+
+lemma bisim_constraints_meant_for_bisim_worlds_rhs:
+  shows \<open>\<forall> w. P w W1  \<and> P w W2 \<and> P w W3 \<and> P w W_false \<and> P w W_true \<Longrightarrow> \<forall> w v. bisim_r w v \<longrightarrow> P w v\<close> 
+  using bisim_r_contains_rhs by blast
+
+lemma bisim_r_is_bisimulation_forth:
+  shows \<open>(bisim_r w v) \<longrightarrow> (\<forall>w'. w \<lesssim><w> w' \<longrightarrow> (\<exists>v'. v \<lesssim><v> v' \<and> bisim_r w' v'))\<close>
+proof
+  assume \<open>bisim_r w v\<close>
+  show \<open>\<forall>w'. w \<lesssim><w> w' \<longrightarrow> (\<exists>v'. v \<lesssim><v> v' \<and> bisim_r w' v')\<close> 
+  proof (cases w)
+    case W_true
+    then show ?thesis 
+      using \<open>bisim_r w v\<close> bisim_r.simps(10) bisim_r.simps(11) bisim_r.simps(12) bisim_r.simps(3) 
+        bisim_r.simps(4) bisim_r_contains_rhs ctls_accessibility.simps(8) 
+        ctls_accessibility.simps(9) w_true_reaches_w1_w2_w_true by blast
   next
-    case (Suc m)
-    assume \<open>\<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> m \<and> \<bullet>i2 = \<pi> (Suc m)\<close>
-    then obtain i1 i2 where fixed_i1_i2:\<open>i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> m \<and> \<bullet>i2 = \<pi> (Suc m)\<close> by blast
-    have \<open>\<bullet> i2 = {} \<or> \<bullet> i2 = {Phi} \<or> \<bullet> i2 = {Phi, Psi}\<close> 
-      by (metis atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(3) 
-          atomic_truth.simps(4) atomic_truth.simps(5) world.exhaust)
-    then show ?case
-    proof 
-      assume \<open>\<bullet>i2 = {}\<close> 
-      from this is_W_true_path have 
-        \<open>\<pi> (Suc (Suc m)) = {} \<or> \<pi> (Suc (Suc m)) = {Phi} \<or> \<pi> (Suc (Suc m)) = {Phi, Psi}\<close> 
-        by (metis (full_types) atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(3) 
-            atomic_truth.simps(4) atomic_truth.simps(5) world.exhaust)
-      then show \<open>\<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m))\<close> 
-        by (metis \<open>\<bullet>i2 = {}\<close> fixed_i1_i2 atomic_truth.simps(2) atomic_truth.simps(3) 
-            atomic_truth.simps(5) count_access.simps(10) count_access.simps(8) 
-            meaningful_acessibility)
-    next
-      assume phi_or_phi_and_psi: \<open>\<bullet>i2 = {Phi} \<or> \<bullet>i2 = {Phi, Psi}\<close>
-      show \<open>\<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m)) \<close>
-      proof (cases \<open>\<bullet>i2 = {Phi}\<close>)
-        case True
-        have nth_place_phi: \<open>\<pi> (Suc m) = {Phi}\<close> using True fixed_i1_i2 by auto
-        from this is_W_true_path phi_only_phi_suc_on_path have \<open>\<pi> (Suc (Suc m)) = {Phi}\<close> 
-          using assms is_path_def by presburger
-        then show ?thesis using Suc nth_place_phi by auto
-      next
-        case False
-        from this phi_or_phi_and_psi have \<open>\<bullet>i2 = {Phi,Psi}\<close> by blast
-        have nth_place_phi_psi: \<open>\<pi> (Suc m) = {Phi, Psi}\<close> 
-          using \<open>\<bullet>i2 = {Phi, Psi}\<close> fixed_i1_i2 by auto
-        from this is_W_true_path phi_psi_only_phy_psi_or_phi_suc have  
-          \<open>\<pi> (Suc (Suc m)) = {Phi, Psi} \<or>\<pi> (Suc (Suc m)) = {Phi}\<close> using assms is_path_def by presburger
-        then show ?thesis by (metis atomic_truth.simps(3) atomic_truth.simps(4) 
-                              count_access.simps(12) local.reflexive nth_place_phi_psi)
-      qed
-    qed
+    case W_false
+    then show ?thesis 
+      using \<open>bisim_r w v\<close> bisim_r.simps(13) bisim_r.simps(14) bisim_r.simps(15) bisim_r.simps(3) 
+        bisim_r.simps(4) bisim_r.simps(5) bisim_r.simps(7) bisim_r_contains_rhs 
+        ctls_accessibility.simps(6) ctls_accessibility.simps(7) w_false_reaches_w1_w2_w3_w_false 
+        by blast
+  next
+    case W1
+    then show ?thesis 
+      using \<open>bisim_r w v\<close> bisim_r.simps(16) bisim_r.simps(17) bisim_r.simps(19) bisim_r.simps(4) 
+        bisim_r_contains_rhs w1_reaches_w1_w2 by blast
+  next
+    case W2
+    then show ?thesis 
+      using \<open>bisim_r w v\<close> w2_reaches_w2 by blast
+  next
+    case W3
+    then show ?thesis using \<open>bisim_r w v\<close> w3_reaches_w3 by blast
+  qed
+qed
+
+
+lemma bisim_r_is_bisimulation_back:
+  shows \<open>(bisim_r w v) \<longrightarrow> (\<forall>v'. v \<lesssim><v> v' \<longrightarrow> (\<exists>w'. w \<lesssim><w> w' \<and> bisim_r v' w'))\<close>
+proof
+  assume \<open>bisim_r w v\<close>
+  then show \<open>\<forall>v'. v \<lesssim><v> v' \<longrightarrow> (\<exists>w'. w \<lesssim><w> w' \<and> bisim_r v' w')\<close>
+  proof (cases w)
+    case W_true
+    then show ?thesis by (metis bisim_r.simps(1) bisim_r.simps(3) bisim_r.simps(4) bisim_r.simps(7) 
+          bisim_r.simps(9) ctls_accessibility.simps(6) ctls_accessibility.simps(7) local.reflexive 
+          world.exhaust)
+  next
+    case W_false
+    then show ?thesis
+      using \<open>bisim_r w v\<close> bisim_r.simps(13) bisim_r.simps(14) bisim_r.simps(15) bisim_r.simps(8) 
+        bisim_r_contains_rhs bisim_r_is_bisimulation_forth by blast
+  next
+    case W1
+    then show ?thesis 
+      using \<open>bisim_r w v\<close> bisim_r.simps(16) bisim_r.simps(17) bisim_r.simps(18) bisim_r.simps(19) 
+        bisim_r.simps(4) bisim_r_contains_rhs w1_reaches_w1_w2 by blast
+  next
+    case W2
+    then show ?thesis 
+      using \<open>bisim_r w v\<close> bisim_r.simps(20) bisim_r.simps(21) bisim_r.simps(22) bisim_r.simps(7) 
+        bisim_r_contains_rhs bisim_r_is_bisimulation_forth by blast
+  next
+    case W3
+    then show ?thesis 
+      by (metis \<open>bisim_r w v\<close> bisim_r.simps(23) bisim_r.simps(24) bisim_r.simps(25) bisim_r.simps(6) 
+          local.reflexive w2_reaches_w2 w3_reaches_w3 world.exhaust)
   qed
 qed  
-
-lemma phi_only_phi_suc_on_path_W_false:
-  assumes 
-    path: \<open>is_path W_false \<pi>\<close> and
-    nth_place_phi: \<open>\<pi> n = {Phi}\<close>
-  shows \<open>\<pi> (Suc n) = {Phi}\<close> 
-proof (rule ccontr)
-  assume \<open>\<pi> (Suc n) \<noteq> {Phi}\<close>
-  from this path nth_place_phi have non_phi_suc:
-    \<open>\<exists> i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = {Phi} \<and> \<bullet>i2 \<noteq> {Phi}\<close> by (metis is_path_def)
-  hence \<open>\<exists> i1. W2 \<le><W_false> i1 \<and> \<bullet> i1 \<noteq> {Phi}\<close> 
-    by (metis atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(4) 
-        atomic_truth.simps(5) count_access.simps(36) count_access.simps(37) count_access.simps(46) 
-        count_access.simps(47) count_access.simps(48) insert_not_empty world.exhaust)
-  thus \<open>False\<close> 
-    by (metis atomic_truth.simps(4) atomic_truth.simps(5) count_access.simps(42) 
-        count_access.simps(43) count_access.simps(44) world.exhaust)
-qed
-
-lemma phi_psi_only_phy_psi_or_phi_suc_W_false:
-  assumes 
-    path: \<open>is_path W_false \<pi>\<close> and
-    nth_place_phi_psi: \<open>\<pi> n = {Phi, Psi}\<close>
-  shows
-     \<open>\<pi> (Suc n) = {Phi,Psi} \<or> \<pi> (Suc n) = {Phi}\<close>
-proof (rule ccontr)
-  assume contr_assm: \<open>\<not> (\<pi> (Suc n) = {Phi, Psi} \<or> \<pi> (Suc n) = {Phi})\<close>
-  from this path nth_place_phi_psi have non_phi_suc: 
-    \<open>\<exists> i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = {Phi, Psi} \<and> \<bullet>i2 \<noteq> {Phi, Psi} \<and> \<bullet>i2 \<noteq> {Phi}\<close> unfolding is_path_def 
-    by metis
-  hence \<open>\<exists> i1. W1 \<le><W_true> i1 \<and> \<bullet>i1 \<noteq>  {Phi, Psi} \<and> \<bullet>i1 \<noteq>  {Phi}\<close>  
-    by (metis contr_assm atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(4) 
-        atomic_truth.simps(5) count_access.simps(36) count_access.simps(37) insert_not_empty 
-        nth_place_phi_psi path phi_only_phi_suc_on_path_W_false world.exhaust)
-  thus \<open>False\<close> by (metis atomic_truth.simps(3) atomic_truth.simps(4) atomic_truth.simps(5) 
-                   count_access.simps(36) count_access.simps(37) world.exhaust)
-qed
-
-lemma after_start_eq_back:
-  assumes
-    \<open>\<pi> 0 = \<bullet>W_true \<and>  \<pi> 0 = \<bullet>W_false\<close>
-  shows
-    \<open>(\<forall>n. \<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n)) \<Longrightarrow>
-     (\<forall>n. \<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n))\<close>
-proof
-  assume is_W_false_path: \<open>\<forall>n. \<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n)\<close>
-  fix m
-  show \<open>\<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> m \<and> \<bullet>i2 = \<pi> (Suc m)\<close>
-  proof (induct m)
-    case 0 
-    from is_W_false_path have \<open>\<pi> 0 = {}\<close> by (simp add: assms)
-    then show ?case 
-      by (metis (no_types, opaque_lifting) atomic_truth.simps(1) atomic_truth.simps(2) 
-          atomic_truth.simps(4) atomic_truth.simps(5) count_access.simps(6) count_access.simps(7) 
-          is_W_false_path local.reflexive world.exhaust)
-    case (Suc m)
-    assume \<open>\<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> m \<and> \<bullet>i2 = \<pi> (Suc m)\<close>
-    then obtain i1 i2 where fixed_i1_i2: \<open>i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> m \<and> \<bullet>i2 = \<pi> (Suc m)\<close> by blast
-    from is_W_false_path have \<open>\<bullet> i2 = {} \<or> \<bullet> i2 = {Phi} \<or> \<bullet> i2 = {Phi, Psi}\<close>  
-      by (metis atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(3) 
-          atomic_truth.simps(4) atomic_truth.simps(5) world.exhaust)
-    from this show ?case  
-    proof 
-      assume \<open>\<bullet>i2 = {}\<close>
-      from this is_W_false_path have 
-        \<open>\<pi> (Suc (Suc m)) = {} \<or> \<pi> (Suc (Suc m)) = {Phi} \<or> \<pi> (Suc (Suc m)) = {Phi, Psi}\<close> 
-        by (metis (full_types) atomic_truth.simps(1) atomic_truth.simps(2) atomic_truth.simps(3) 
-            atomic_truth.simps(4) atomic_truth.simps(5) world.exhaust)
-      then show \<open>\<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m))\<close> 
-        by (metis \<open>\<bullet>i2 = {}\<close> fixed_i1_i2 atomic_truth.simps(1) atomic_truth.simps(3) 
-            atomic_truth.simps(4) count_access.simps(6) count_access.simps(7) 
-            world_dependant_kripke_structure_axioms world_dependant_kripke_structure_def)
-     next
-       assume phi_or_phi_and_psi: \<open>\<bullet>i2 = {Phi} \<or> \<bullet>i2 = {Phi, Psi}\<close>
-       show \<open>\<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m))\<close>
-       proof (cases \<open>\<bullet>i2 = {Phi}\<close>)
-         case True
-         have nth_place_phi: \<open>\<pi> (Suc m) = {Phi}\<close> 
-           using True fixed_i1_i2 by auto
-         from this is_W_false_path have \<open>\<pi> (Suc (Suc m)) = {Phi}\<close> using assms is_path_def 
-           using phi_only_phi_suc_on_path_W_false by auto
-         then show \<open>\<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> (Suc m) \<and> \<bullet>i2 = \<pi> (Suc (Suc m))\<close> 
-           using atomic_truth.simps(4) nth_place_phi by blast
-       next
-         case False
-         from this phi_or_phi_and_psi have \<open>\<bullet>i2 = {Phi,Psi}\<close> by blast
-         have nth_place_phi_psi: \<open>\<pi> (Suc m) = {Phi, Psi}\<close> 
-           using \<open>\<bullet>i2 = {Phi, Psi}\<close> fixed_i1_i2 by auto
-         from this is_W_false_path phi_psi_only_phy_psi_or_phi_suc_W_false have 
-           \<open>\<pi> (Suc (Suc m)) = {Phi, Psi} \<or>\<pi> (Suc (Suc m)) = {Phi}\<close> using assms is_path_def by simp
-         then show ?thesis 
-           by (metis atomic_truth.simps(3) atomic_truth.simps(4) count_access.simps(11) 
-               nth_place_phi_psi reflexive)
-       qed 
-     qed
-  qed
-qed
-
-lemma W_false_path_iff_W_true_path:
-  shows \<open>is_path W_false \<pi> \<longleftrightarrow> is_path W_true \<pi>\<close>
-proof (unfold is_path_def)
-  have same_start: \<open>\<pi> 0 = \<bullet>W_false \<longleftrightarrow> \<pi> 0 = \<bullet>W_true\<close> by simp
-  then show \<open>\<pi> 0 = \<bullet>W_false \<and> (\<forall>n. \<exists>i1 i2. i1 \<le><W_false> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n)) \<longleftrightarrow>
-             \<pi> 0 = \<bullet>W_true \<and> (\<forall>n. \<exists>i1 i2. i1 \<le><W_true> i2 \<and> \<bullet>i1 = \<pi> n \<and> \<bullet>i2 = \<pi> (Suc n))\<close>
-  using after_start_eq_forth after_start_eq_back by auto
-qed
   
-lemma W_true_and_W_false_paths_eq:
-  shows \<open>paths W_true = paths W_false\<close> 
-  using W_false_path_iff_W_true_path paths_def by auto
+lemma bism_r_is_bisimulation:
+  shows \<open>bisimulation bisim_r\<close>
+  unfolding bisimulation_def 
+  using bisim_r_is_bisimulation_back bisim_r_is_bisimulation_forth bism_r_has_eq_labels by blast
 
-subsection \<open>CTL* can not distinguish between $w_{true}$ and $w_{false}$\<close>
+text \<open>Knowing that $W_{true}$ and $W_{false}$ are bisimilar, we can show, that there is no 
+      distinguishing $CTL^*$ formula for them.\<close>
 
-definition existing_path :: \<open>ap set word\<close>
-  where \<open>existing_path _ = {}\<close>
-
-lemma existst_path_true_at_W_true_and_W_false:
-  shows \<open>\<exists> \<pi>. is_path W_true \<pi> \<and> is_path W_false \<pi>\<close>
-proof
-  show \<open>is_path W_true existing_path \<and> is_path W_false existing_path\<close>
-    by (metis atomic_truth.simps(1) atomic_truth.simps(2) existing_path_def is_path_def reflexive)
-qed
-
-lemma ltlr_only_distiguishing_differnt_paths:
+lemma w_true_w_false_not_ctl_star_distiguishable:
   fixes 
-    ltlr_formula :: \<open>ap ltlr\<close> and
-    \<pi> \<rho> :: \<open>ap set word\<close>
-  shows \<open>\<pi> \<Turnstile>\<^sub>r ltlr_formula \<and> \<not> (\<rho> \<Turnstile>\<^sub>r ltlr_formula) \<Longrightarrow> \<pi> \<noteq> \<rho>\<close> by auto
-
-lemma paths_eq_all_paths_truth_eq:
+    \<Phi> :: \<open>ap state_formula\<close>
   assumes
-    \<open>\<exists> \<pi>. is_path W1t \<pi> \<and> is_path W2t \<pi>\<close> and
-    \<open>paths W1t = paths W2t\<close>
-  shows
-    \<open>W1t \<in> \<lbrakk> A(ltlr_formula) \<rbrakk> \<Longrightarrow> W2t \<in> \<lbrakk>  A(ltlr_formula) \<rbrakk>\<close>
-proof (rule ccontr)
-  assume \<open>W1t \<in> \<lbrakk> A(ltlr_formula) \<rbrakk>\<close>
-  hence all_paths_true: \<open>\<forall> \<pi>. is_path W1t \<pi> \<longrightarrow> \<pi> \<Turnstile>\<^sub>r ltlr_formula\<close> by simp
-  assume \<open>W2t \<notin> \<lbrakk> A(ltlr_formula) \<rbrakk>\<close>  
-  hence \<open>\<exists> \<pi>. is_path W2t \<pi> \<and> \<not> \<pi> \<Turnstile>\<^sub>r ltlr_formula\<close> by simp
-  thus \<open>False\<close> using all_paths_true assms(2) paths_def by auto
-qed
-
-lemma paths_eq_means_non_distiguishable:
-  fixes
-    ctl_star_formula :: \<open>ap ltlr ctl_star\<close>
-  shows \<open>W_true \<in> \<lbrakk> ctl_star_formula \<rbrakk> \<longleftrightarrow>  W_false \<in> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
-proof (induct rule: ctl_star.induct)
-  case (all_ctl_star x)
-  show ?case 
-    using existst_path_true_at_W_true_and_W_false paths_eq_all_paths_truth_eq 
-      W_true_and_W_false_paths_eq by blast
-next
-  case (and_ctl_star x1a x2)
-  then show ?case by simp
-next
-  case (not_ctl_star x)
-  then show ?case by simp
-qed
-
-subsection \<open>General Woulds semantics can not be expressed by CTL*\<close>
-
-lemma general_would_not_in_ctl_star:
-  fixes
-    ctl_star_formula :: \<open>ap ltlr ctl_star\<close>
-  shows \<open>{w. Phi \<in> \<bullet> w} \<box>\<rightarrow> {w. Psi \<in> \<bullet> w} \<noteq> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
-proof (rule ccontr)
-  assume semantics_eq: \<open>\<not> {w. Phi \<in> \<bullet>w} \<box>\<rightarrow> {w. Psi \<in> \<bullet>w} \<noteq> \<lbrakk> ctl_star_formula \<rbrakk>\<close>
-  hence W_true_in_semantics:\<open>W_true \<in> \<lbrakk> ctl_star_formula \<rbrakk>\<close> using W_true_in_would_sem by blast
-  from semantics_eq have \<open>W_false \<notin> \<lbrakk> ctl_star_formula \<rbrakk>\<close> using W_false_not_in_would_sem 
-    by fastforce 
-  then show \<open>False\<close> using W_true_in_semantics paths_eq_means_non_distiguishable by auto
-qed
+    bisim_sym: \<open>\<And> w v. w \<leftrightarrow> v \<Longrightarrow> v \<leftrightarrow> w\<close> and 
+    path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
+      (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
+  shows 
+    \<open>(W_true \<Turnstile>\<^sub>s \<Phi> \<longleftrightarrow>  W_false \<Turnstile>\<^sub>s \<Phi>)\<close>
+proof -
+  have \<open>bisim_r W_true W_false\<close> by simp
+  hence \<open>W_true \<leftrightarrow> W_false\<close> using bism_r_is_bisimulation bisimilar_def by force
+  thus ?thesis using  bisim_sym path_lifting bisimulation_finer_than_ctls by auto
+qed 
 
 end
+
 end

@@ -6,16 +6,17 @@ begin
 
 locale world_dependant_kripke_structure =
   fixes
-    \<comment>\<open>assigning a set of atomic propositions to each world.\<close>
+    \<comment>\<open>Assigning a set of atomic propositions to each world.\<close>
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
-    \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "From $w_1$ $w_2$ is possible 
-       (as seen from $w$'s viewpoint).".\<close>
+    \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "$w_1$ at least as similar to $w$ as is $w_2$".  
+       A similar relation was defined by Lewis cite\<open>lewisCounterfactuals1973\<close> as well as by 
+       Finkbeiner and Siber cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>\<close>
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
 
 text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
-      Katoen cite\<open>ctls_def\<close>. The name "accessibility" for the function encoding the similarity 
+      Katoen cite\<open>modelcheckingbaierkatoen\<close>. The name "accessibility" for the function encoding the similarity 
       between worlds is due to the fact, that it is reinterpreted to state the fact "$w_1$ is more 
       accessible from $w$ than $w_2$" in the following \texttt{locales}.
 
