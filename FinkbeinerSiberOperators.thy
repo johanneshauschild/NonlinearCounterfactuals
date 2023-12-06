@@ -43,8 +43,8 @@ text \<open>As shown by Finkbeiner and Siber @{cite finkbeinerCounterfactualsMod
 
 lemma (in total_accessible_lewisian_structure) would_equal_to_universal_would:
   shows \<open>w \<in> \<phi> \<box>\<rightarrow>\<^sub>L \<psi> \<longleftrightarrow> w \<in> \<phi> \<box>\<rightarrow>\<^sub>F\<^sub>S \<psi>\<close>
-  using reflexive transitive total_accessibility linearity unfolding would_def universal_would_def
-  by (auto, metis local.transitive)
+  using reflexive transitive total_accessibility linearity unfolding would_def universal_would_def 
+  by (auto, metis)
 
 lemma (in  total_accessible_lewisian_structure) might_equal_to_existential_might:
   shows

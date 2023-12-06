@@ -7,7 +7,7 @@ section \<open>A reinterpretation of Lewis operators in the base structure\<clos
 
 subsection \<open>Defining the operators\<close>
 
-text \<open>Finkbeiner and Siber  cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close> suggest to drop the 
+text \<open>Finkbeiner and Siber  @{cite finkbeinerCounterfactualsModuloTemporal2023} suggest to drop the 
       assumption that every world is accessible 
       from the actual world by not including inaccessible worlds in $\leq_w$. Small modifications on 
       Universal Would and Existential Might make it possible to depict their semantics 
@@ -320,7 +320,7 @@ lemma (in preordered_counterfactual_structure) universal_would_considering_inacc
     \<open>W \<notin> \<phi> \<box>\<rightarrow>\<^sub>F\<^sub>S \<psi> \<and> W \<in> \<phi> \<box>\<rightarrow> \<psi>\<close>
   using assms unfolding universal_would_def general_would_def by blast
 
-lemma (in finkbeiner_siber_structure) universal_might_equivalent_to_general_might:
+lemma (in finkbeiner_siber_structure) existential_might_equivalent_to_general_might:
   shows
     \<open>w \<in> \<phi> \<diamond>\<rightarrow>\<^sub>F\<^sub>S \<psi> \<longleftrightarrow> w \<in> \<phi> \<diamond>\<rightarrow> \<psi>\<close>
   by (simp add: universal_would_equivalent_to_general_would)

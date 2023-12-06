@@ -21,7 +21,7 @@ abbreviation (in preordered_counterfactual_structure) might ::
 
 subsection \<open>Necessity and Possibility\<close>
 
-text\<open>Lewis cite\<open>lewisCounterfactuals1973\<close> suggests defining the modal operators
+text\<open>Lewis @{cite lewisCounterfactuals1973} suggests defining the modal operators
     \emph{necessary} and \emph{possible} through his \emph{would} operator as follows:\<close>
 
 abbreviation (in preordered_counterfactual_structure) necessary ::
@@ -121,14 +121,14 @@ lemma weak_might_follows_definition:
      (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
   using would_def by auto
 
-lemma at_least_as_possible_follows_definition:
-  shows
-    \<open>w \<in> \<phi> \<preceq>\<^sub>L \<psi> \<longleftrightarrow> w \<in> {w. \<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi>)}\<close>
-  unfolding would_def by blast
-
 lemma more_possible_follows_definition:
   shows
     \<open>w \<in> \<phi> \<prec>\<^sub>L \<psi> \<longleftrightarrow> w \<in> {w. \<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> w2 \<notin> \<psi>)}\<close>
+  unfolding would_def by blast
+
+lemma at_least_as_possible_follows_definition:
+  shows
+    \<open>w \<in> \<phi> \<preceq>\<^sub>L \<psi> \<longleftrightarrow> w \<in> {w. \<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi>)}\<close>
   unfolding would_def by blast
 
 end
