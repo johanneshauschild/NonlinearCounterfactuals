@@ -30,7 +30,7 @@ datatype 'a state_formula =
   Is \<open>'a state_formula\<close>
   | Neg_path \<open>'a path_formula\<close> (\<open>neg _ \<close> [100])
   | And_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ and _\<close> [82,82] 81) 
-  | Next_path \<open>'a path_formula\<close> (\<open>\<circle> _\<close>)
+  | Next_path \<open>'a path_formula\<close> (\<open>X _\<close>)
   | Until_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ UU _\<close> [82,82] 81)
 
 primrec 
@@ -45,7 +45,7 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(Is \<phi>) = (\<pi> 0) \<Turnstile>\<^sub>s \<phi>\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p neg \<phi> = (\<not>\<pi> \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p (\<phi> and \<psi>) = (\<pi> \<Turnstile>\<^sub>p \<phi> \<and> \<pi> \<Turnstile>\<^sub>p \<psi>)\<close>
-| \<open>\<pi> \<Turnstile>\<^sub>p(\<circle> \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
+| \<open>\<pi> \<Turnstile>\<^sub>p(X \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
 text \<open>Bisimulation  inspired by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> and by Pohlmann 
@@ -80,8 +80,9 @@ proof -
     using \<open>is_path v \<pi>2 \<and> (\<forall>i ia. \<pi>1 ia \<leftrightarrow> \<pi>2 ia)\<close> \<open>is_path w \<pi>1 \<and> \<pi>1 \<Turnstile>\<^sub>p x\<close> by auto
 qed
 
-text \<open>This proof is a Isabelle implementation of the proof, that bisimulation is finer than $CTL^*$,
-      As shown by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> in Lemma 7.26\<close>
+text \<open>This proof is a Isabelle implementation of the proof, that bisimulation is finer than 
+      $CTL^*$-equivalence, as shown by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> 
+      in Lemma 7.26\<close>
 
 lemma bisimulation_finer_than_ctls:
   fixes 
@@ -131,7 +132,7 @@ qed
 
 end
 
-subsection \<open>Example \enph{Counterfactual} Structure\<close>
+subsection \<open>Example \emph{Counterfactual} Structure\<close>
 
 datatype world = W_true | W_false | W1 | W2 | W3
 datatype ap = B | F
