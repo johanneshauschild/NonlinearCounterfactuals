@@ -6,11 +6,17 @@ begin
 
 locale world_dependant_kripke_structure =
   fixes
-    \<comment>\<open>assigning a set of atomic propositions to each world.\<close>
+    \<comment>\<open>Assigning a set of atomic propositions to each world.\<close>
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
+<<<<<<< HEAD
     \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "$w_1$ at least as similar to $w$ as is $w_2$".
       A similar relation was defined by Lewis @{cite lewisCounterfactuals1973} as well as Finkbeiner 
       and Siber cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>\<close>
+=======
+    \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "$w_1$ at least as similar to $w$ as is $w_2$".  
+       A similar relation was defined by Lewis cite\<open>lewisCounterfactuals1973\<close> as well as by 
+       Finkbeiner and Siber cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>\<close>
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>

@@ -1,10 +1,9 @@
-section \<open>Relation of CTL* to the counterfactual Would Operator\<close>
-
 theory CTLStar
 
 imports 
   GeneralOperators
-  Main "HOL-Library.Omega_Words_Fun"
+  Main "HOL-Library.Omega_Words_Fun" 
+
 begin
 
 section \<open>Relation between expressive power of CTL* and Counterfactual Operators\<close>
@@ -12,6 +11,7 @@ section \<open>Relation between expressive power of CTL* and Counterfactual Oper
 context world_dependant_kripke_structure
 
 begin
+<<<<<<< HEAD
 (*
 text \<open>Path definition taken from the Isabelle/HOL Tutorial cite\<open>isabellebook2002\<close>
       Usage of $\omega$-words inspired by cite\<open>sickertltl\<close>\<close>
@@ -34,6 +34,30 @@ datatype 'a state_formula =
   | Next_path \<open>'a path_formula\<close> (\<open>X _\<close>)
   | Until_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ UU _\<close> [82,82] 81)
 
+=======
+
+text \<open>Path definition taken from the Isabelle/HOL Tutorial cite\<open>isabellebook2002\<close>
+      Usage of $\omega$-words inspired by cite\<open>sickertltl\<close>\<close>
+
+definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close> 
+  where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
+
+text \<open>Definition of the logic $CTL^*$ as in cite\<open>modelcheckingbaierkatoen\<close>\<close>
+
+datatype 'a state_formula =  
+  Prop_state 'a ("prop'(_')")
+  | True_state  ("true")
+  | And_state \<open>'a state_formula\<close> \<open>'a state_formula\<close> (\<open>_ && _ \<close> [82,82] 81)
+  | Neg_state \<open>'a state_formula\<close> (\<open>~~ _ \<close> [100])
+  | Exists_state \<open>'a path_formula\<close> (\<open>EE _\<close>)
+  and 'a path_formula = 
+  Is \<open>'a state_formula\<close>
+  | Neg_path \<open>'a path_formula\<close> (\<open>neg _ \<close> [100])
+  | And_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ and _\<close> [82,82] 81) 
+  | Next_path \<open>'a path_formula\<close> (\<open>X _\<close>)
+  | Until_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ UU _\<close> [82,82] 81)
+
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
 primrec 
   mc_state_formula :: \<open>'i \<Rightarrow> 'ap state_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>s _\<close> [82,82] 81)  and
   mc_path_formula :: \<open>'i word \<Rightarrow> 'ap path_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>p _\<close> [82,82] 81)
@@ -49,8 +73,13 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(X \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
+<<<<<<< HEAD
 text \<open>Bisimulation  inspired by Baier and Katoen @{cite baier2008modelchecking} and by Pohlmann 
       @{cite pohlmann2021reactivebisim}\<close>
+=======
+text \<open>Bisimulation  inspired by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> and by Pohlmann 
+      cite\<open>pohlmannbisim\<close>\<close>
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
 
 definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
@@ -58,7 +87,11 @@ definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rig
     (\<forall> w'. w \<le><w> w' \<longrightarrow> (\<exists> v'. v \<le><v> v' \<and> R w' v')) \<and>
     (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R v' w'))\<close> 
 
+<<<<<<< HEAD
 text \<open>Definition taken from Pohlmann @{cite pohlmann2021reactivebisim}\<close>
+=======
+text \<open>Definition taken from Pohlmann cite\<open>pohlmannbisim\<close>\<close>
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
 
 definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
   where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
@@ -66,7 +99,11 @@ definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\
 lemma existential_path_non_dist:
   assumes
     \<open>\<And> \<pi>1 \<pi>2. (\<forall>i. \<pi>1 i \<leftrightarrow> \<pi>2 i) \<longrightarrow> \<pi>1 \<Turnstile>\<^sub>p x = \<pi>2 \<Turnstile>\<^sub>p x\<close> and
+<<<<<<< HEAD
     \<comment>\<open>The path lifting lemma. Lemma 7.5 in @{cite baier2008modelchecking}\<close>
+=======
+    \<comment>\<open>The path lifting lemma. Lemma 7.5 in cite\<open>modelcheckingbaierkatoen\<close>\<close>
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
     path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>
   shows \<open>w \<leftrightarrow> v \<Longrightarrow>  w \<Turnstile>\<^sub>s (EE x) \<Longrightarrow> v \<Turnstile>\<^sub>s (EE x)\<close>
@@ -82,7 +119,11 @@ proof -
 qed
 
 text \<open>This proof is a Isabelle implementation of the proof, that bisimulation is finer than 
+<<<<<<< HEAD
       $CTL^*$-equivalence, as shown by Baier and Katoen @{cite baier2008modelchecking} 
+=======
+      $CTL^*$-equivalence, as shown by Baier and Katoen cite\<open>modelcheckingbaierkatoen\<close> 
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
       in Lemma 7.26\<close>
 
 lemma bisimulation_finer_than_ctls:
@@ -90,7 +131,11 @@ lemma bisimulation_finer_than_ctls:
     \<Phi> :: \<open>'ap state_formula\<close> and
     \<phi> :: \<open>'ap path_formula\<close> 
   assumes
+<<<<<<< HEAD
 (*    \<comment>\<open>Bisimulation is a symmetric property. Lemma 7.4 in @{cite baier2008modelchecking}\<close>*)
+=======
+    \<comment>\<open>Bisimulation is a symmetric property. Lemma 7.4 in cite\<open>modelcheckingbaierkatoen\<close>\<close>
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
     bisim_sym: \<open>\<And> w v. w \<leftrightarrow> v \<Longrightarrow> v \<leftrightarrow> w\<close> and 
     path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
@@ -133,8 +178,12 @@ qed
 
 end
 
+<<<<<<< HEAD
 subsection \<open>Example \emph{Counterfactual} Structure containing two \enquote*{Would} 
             distinguishable worlds\<close>
+=======
+subsection \<open>Example \emph{Counterfactual} Structure\<close>
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
 
 datatype world = W_true | W_false | W1 | W2 | W3
 datatype ap = B | F
@@ -209,7 +258,11 @@ next
   show \<open>{W1} \<subseteq> {w. F \<in> \<L> w}\<close> by simp
 qed
 
+<<<<<<< HEAD
 text \<open>The following two lemmata show, that $W_{true}$ and $W_{false}$ are distinguishable 
+=======
+text \<open>The following two lemmata show, that $W_{true}$ and $W_false$ are distinguishable 
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
       by \enquote*{General Would}\<close>
 
 lemma W_true_in_would_sem:
@@ -428,7 +481,14 @@ proof -
   hence \<open>W_true \<leftrightarrow> W_false\<close> using bism_r_is_bisimulation bisimilar_def by force
   thus ?thesis using  bisim_sym path_lifting bisimulation_finer_than_ctls by auto
 qed 
+<<<<<<< HEAD
 
 end
 
 end
+=======
+
+end
+
+end
+>>>>>>> c7e6fc3b12b865c97cdbbe43671053fa3a2f0ac8
