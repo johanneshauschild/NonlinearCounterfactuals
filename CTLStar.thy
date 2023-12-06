@@ -244,7 +244,7 @@ qed
   
 end
 
-subsection \<open>$W_{true} and W_{false} are not distinguishable by  $CTL^*$\<close>
+subsection \<open>$W_{true}$ and $W_{false}$ are not distinguishable by  $CTL^*$\<close>
 
 fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<lesssim><_> _" [70, 70, 70] 80) 
   where 
