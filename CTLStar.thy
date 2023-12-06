@@ -12,14 +12,13 @@ context world_dependant_kripke_structure
 
 begin
 
-(*
-text \<open>Path definition taken from the Isabelle/HOL Tutorial cite\<open>isabellebook2002\<close>
-      Usage of $\omega$-words inspired by cite\<open>sickertltl\<close>\<close>
-*)
+text \<open>Path definition taken from the Isabelle/HOL Tutorial @{cite nipkow2002isabelle}
+      Usage of $\omega$-words inspired by @{cite sickert2016ltl}.\<close>
+
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close> 
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-(*text \<open>Definition of the logic $CTL^*$ as in @{cite baier2008modelchecking}\<close>*)
+text \<open>Definition of the logic $CTL^*$ as in @{cite baier2008modelchecking}\<close>
 
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
@@ -90,7 +89,7 @@ lemma bisimulation_finer_than_ctls:
     \<Phi> :: \<open>'ap state_formula\<close> and
     \<phi> :: \<open>'ap path_formula\<close> 
   assumes
-(*    \<comment>\<open>Bisimulation is a symmetric property. Lemma 7.4 in @{cite baier2008modelchecking}\<close>*)
+    \<comment>\<open>Bisimulation is a symmetric property. Lemma 7.4 in @{cite baier2008modelchecking}\<close>
     bisim_sym: \<open>\<And> w v. w \<leftrightarrow> v \<Longrightarrow> v \<leftrightarrow> w\<close> and 
     path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 

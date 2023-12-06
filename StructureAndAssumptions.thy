@@ -10,13 +10,13 @@ locale world_dependant_kripke_structure =
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
     \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "$w_1$ at least as similar to $w$ as is $w_2$".
       A similar relation was defined by Lewis @{cite lewisCounterfactuals1973} as well as Finkbeiner 
-      and Siber cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>\<close>
+      and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023}\<close>
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
 
 text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
-      Katoen cite\<open>modelcheckingbaierkatoen\<close>. The name "accessibility" for the function encoding the similarity 
+      Katoen @{cite baier2008modelchecking}. The name "accessibility" for the function encoding the similarity 
       between worlds is due to the fact, that it is reinterpreted to state the fact "$w_1$ is more 
       accessible from $w$ than $w_2$" in the following \texttt{locales}.
 
@@ -27,8 +27,8 @@ locale preordered_counterfactual_structure = world_dependant_kripke_structure ap
     ap :: \<open>'i \<Rightarrow> 'ap set\<close> and
     accessibility :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool" ("_ \<le><_> _" [70, 70, 70] 80) +
   assumes
-    \<comment>\<open>Lewis' cite\<open>lewisCounterfactuals1973\<close>  as well as Finkbeiner and Sibers 
-      cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close> structure are transitive\<close>
+    \<comment>\<open>Lewis' @{cite lewisCounterfactuals1973}  as well as Finkbeiner and Sibers 
+      @{cite finkbeinerCounterfactualsModuloTemporal2023} structure are transitive\<close>
     transitive [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w2 \<le><w> w3\<rbrakk> \<Longrightarrow> w1 \<le><w> w3\<close>  and
     \<comment>\<open>We assume, that any two worlds, which are comparable in respect to a world, are also 
       accessible from that world:\<close>

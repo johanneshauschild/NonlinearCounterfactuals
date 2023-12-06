@@ -37,7 +37,7 @@ qed
 
 subsection \<open>Equivalence under total accessibility and linearity\<close>
 
-text \<open>As shown by Finkbeiner and Siber cite\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>, 
+text \<open>As shown by Finkbeiner and Siber @{cite finkbeinerCounterfactualsModuloTemporal2023}, 
       \emph{Universal Would} and \emph{Existential Might} are equivalent to Lewis version of these 
       operators, assuming total accessibility and linearity\<close>
 
