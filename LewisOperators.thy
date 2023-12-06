@@ -109,7 +109,7 @@ next
     using would_def by auto
 qed
 
-lemma strong_would_follows_definion:
+lemma strong_would_follows_defintion:
   shows
     \<open>w \<in> \<phi> \<box>\<Rightarrow>\<^sub>L \<psi> \<longleftrightarrow> w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
      (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> (w2 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>
