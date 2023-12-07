@@ -65,6 +65,10 @@ lemma (in preordered_counterfactual_structure) general_would_instatiation:
     \<open>W \<in> \<phi> \<box>\<rightarrow> \<psi>\<close>
   using assms unfolding general_would_def by blast
 
+lemma (in preordered_counterfactual_structure) possible_eq_to_gen_would_def:
+  shows \<open>w \<in> \<diamond> \<phi> \<longleftrightarrow> w \<in> UNIV - (\<phi> \<box>\<rightarrow> {})\<close>
+  unfolding general_would_def by fastforce
+
 lemma (in preordered_counterfactual_structure) general_might_follows_definition:
   shows \<open>w \<in> \<phi> \<diamond>\<rightarrow> \<psi> \<longleftrightarrow> w \<in> {w. \<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
          (\<forall> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<longrightarrow> (\<exists> w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi> \<inter> \<psi>))}\<close>
@@ -73,12 +77,14 @@ lemma (in preordered_counterfactual_structure) general_might_follows_definition:
 
 lemma (in preordered_counterfactual_structure) general_strong_would_follows_definition:
   shows \<open>w \<in> \<phi> \<box>\<Rightarrow> \<psi> \<longleftrightarrow> w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> 
-  (\<forall> w1. (w \<le><w> w1 \<and> w1 \<in> \<phi>) \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>
+        (\<forall> w1. (w \<le><w> w1 \<and> w1 \<in> \<phi>) \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+        (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>
   using general_would_def preordered_counterfactual_structure_axioms by auto
 
 lemma (in preordered_counterfactual_structure) general_weak_might_follows_definition:
   shows \<open>w \<in> \<phi> \<diamond>\<Rightarrow> \<psi> \<longleftrightarrow> w \<in> {w. \<not>(\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<or> 
-  (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<longrightarrow> (\<exists> w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi> \<inter> \<psi>)))}\<close>
+         (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<longrightarrow> 
+         (\<exists> w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi> \<inter> \<psi>)))}\<close>
 proof
   assume \<open>w \<in> UNIV - ((\<diamond> \<phi>) \<inter> (\<phi> \<box>\<rightarrow> (UNIV - \<psi>)))\<close>
   thus \<open>w \<in> {w. \<not>(\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<or> (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
@@ -104,19 +110,25 @@ proof
   (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<union> \<psi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<phi> \<union> \<psi> \<or> w3 \<in> UNIV - \<psi>)))}\<close>
     using general_would_def preordered_counterfactual_structure_axioms by auto 
   hence \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi>) \<and> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<longrightarrow>
-  (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> (\<phi> \<union> \<psi>) \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<psi>)))}\<close> using phi_stays_in_set by auto
+  (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> (\<phi> \<union> \<psi>) \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<psi>)))}\<close> 
+      using phi_stays_in_set by auto
   hence \<open>w \<in> {w. (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi>) \<and> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<longrightarrow>
-  (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<psi>)))}\<close> using no_element_in_psi by auto
+  (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<psi>)))}\<close>
+      using no_element_in_psi by auto
   hence \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi>) \<and> (\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<longrightarrow>
   (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)))}\<close> by auto
   thus \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi> \<longrightarrow> 
   (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)))}\<close> using possible_phi by blast
 next
   assume \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and>
-             (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)))}\<close>
-  hence strong_would_set_comp: \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi>) \<and> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<longrightarrow>
-       (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<union> \<psi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - (\<phi> \<union> \<psi>) \<union> (UNIV - \<psi>))))}\<close> using subset_generalized by blast
-  thus \<open>w \<in> (\<diamond> (\<phi> \<union> \<psi>)) \<inter> ((\<phi> \<union> \<psi>) \<box>\<rightarrow> (UNIV - \<psi>))\<close> using general_strong_would_follows_definition by presburger
+          (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
+          (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)))}\<close>
+  hence \<open>w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi>) \<and> 
+        (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<union> \<psi> \<and> 
+        (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - (\<phi> \<union> \<psi>) \<union> (UNIV - \<psi>))))}\<close> 
+      using subset_generalized by blast
+    thus \<open>w \<in> (\<diamond> (\<phi> \<union> \<psi>)) \<inter> ((\<phi> \<union> \<psi>) \<box>\<rightarrow> (UNIV - \<psi>))\<close> 
+      using general_strong_would_follows_definition by presburger
 qed
 
 lemma (in preordered_counterfactual_structure) weak_might_def_to_set_comprehension:
@@ -135,8 +147,11 @@ proof
   (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> (\<phi> \<union> \<psi>) \<and> (\<forall> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<union> \<psi> \<longrightarrow> 
   (\<exists> w3. w3 \<le><w> w2 \<and> w3 \<in> (\<phi> \<union> \<psi>) \<inter> \<phi>)))}\<close> using weak_might_def_to_set_comprehension by meson
   hence \<open>w \<in> {w. \<not>(\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<psi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<union> \<psi> \<and> 
-  (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>)))}\<close> using simplify_general_might_to_at_least_as_pos by auto
-  thus \<open>w \<in> {w. (\<nexists>w1. w \<le><w> w1 \<and> w1 \<in> \<psi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>)))}\<close> using phi_or_psi_to_phi by force
+  (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>)))}\<close> 
+    using simplify_general_might_to_at_least_as_pos by auto
+  thus \<open>w \<in> {w. (\<nexists>w1. w \<le><w> w1 \<and> w1 \<in> \<psi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
+        (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>)))}\<close> 
+    using phi_or_psi_to_phi by force
 next
   assume \<open>w \<in> {w. \<not>(\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<psi>) \<or> (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and>
   (\<forall>w2. w2 \<le><w> w1 \<and> w2 \<in> \<psi> \<longrightarrow> (\<exists>w3. w3 \<le><w> w2 \<and> w3 \<in> \<phi>)))}\<close>
