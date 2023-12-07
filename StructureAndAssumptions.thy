@@ -70,13 +70,13 @@ lemma (in lewisian_structure) non_vacuous_woulds_equal:
 proof
   assume \<open>\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
           (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
-  thus \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>)\<close>
+  thus \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>)\<close> 
     by (metis assms meaningful_acessibility)
 next
   assume \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> UNIV - \<phi> \<union> \<psi>)\<close>
   thus \<open>\<forall>w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<longrightarrow> (\<exists>w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> 
-       (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close>
-    by (metis linearity local.transitive)
+       (\<forall>w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))\<close> 
+    by (metis linearity transitive)
 qed
 
 lemma (in preordered_counterfactual_structure) phi_stays_in_set:
