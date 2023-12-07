@@ -18,8 +18,7 @@ text \<open>Path definition taken from the Isabelle/HOL Tutorial @{cite nipkow20
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close> 
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-text \<open>Definition of the logic $CTL^*$ as in @{cite baier2008modelchecking}\<close>
-
+\<comment>\<open>Definition of the logic $CTL^*$ as in @{cite baier2008modelchecking}\<close>
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
   | True_state  ("true")
@@ -48,8 +47,8 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(X \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
-text \<open>Bisimulation  inspired by Baier and Katoen @{cite baier2008modelchecking} and by Pohlmann 
-      @{cite pohlmann2021reactivebisim}\<close>
+text \<open>Bisimulation definition  inspired by Baier and Katoen @{cite baier2008modelchecking} and by 
+      Pohlmann @{cite pohlmann2021reactivebisim}\<close>
 
 definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
@@ -57,11 +56,11 @@ definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rig
     (\<forall> w'. w \<le><w> w' \<longrightarrow> (\<exists> v'. v \<le><v> v' \<and> R w' v')) \<and>
     (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R w' v'))\<close> 
 
-text \<open>Definition taken from Pohlmann @{cite pohlmann2021reactivebisim}\<close>
-
+\<comment>\<open>Definition taken from @{cite pohlmann2021reactivebisim}\<close>
 definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
   where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
 
+\<comment>\<open>Lemma and it's proof also taken from @{cite pohlmann2021reactivebisim}\<close>
 lemma bisim_sym:
   assumes \<open>p \<leftrightarrow> q\<close>
   shows \<open>q \<leftrightarrow> p\<close>
@@ -78,7 +77,8 @@ text \<open>For the following lemma we assume, that the path lifting lemma (Lemm
       @{cite baier2008modelchecking}) holds. It states that, for any two worlds $w_1, w_2$ if $w_1$
       is bisimilar to $w_2$, then for a path $\pi_1$ departing from $w_1$, there exists a path
       $\pi_2$ departing from $w_2$, such that for all $n \in \mathbb{N}$ it holds that the world at the
-      nth position in $(\pi_1)$ is bisimilar to the world at the nth position in $\pi_2$.\<close>
+      nth position in $(\pi_1)$ is bisimilar to the world at the nth position in $\pi_2$.
+      Proving it would have been out of the scope for the thesis.\<close>
 
 lemma existential_path_non_dist:
   assumes
@@ -88,19 +88,18 @@ lemma existential_path_non_dist:
   shows \<open>w \<leftrightarrow> v \<Longrightarrow>  w \<Turnstile>\<^sub>s (EE x) \<Longrightarrow> v \<Turnstile>\<^sub>s (EE x)\<close>
 proof -
   assume bisim: \<open>w \<leftrightarrow> v\<close>
-  assume w_sats: \<open>w \<Turnstile>\<^sub>s EE x\<close>
-  then obtain \<pi>1 where  \<open>is_path w \<pi>1 \<and> (\<pi>1  \<Turnstile>\<^sub>p x)\<close> using mc_state_formula.simps(5) by blast
-  then obtain \<pi>2 where \<open>is_path v \<pi>2 \<and> (\<forall> i. (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>  
+  assume \<open>w \<Turnstile>\<^sub>s EE x\<close>
+  then obtain \<pi>1 where pi1_path: \<open>is_path w \<pi>1 \<and> (\<pi>1  \<Turnstile>\<^sub>p x)\<close> 
+    using mc_state_formula.simps(5) by blast
+  then obtain \<pi>2 where stepwise_bisim_pi2_path: \<open>is_path v \<pi>2 \<and> (\<forall> i. (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>  
     using bisim assms path_lifting by blast
   hence \<open>\<pi>1 \<Turnstile>\<^sub>p x = \<pi>2 \<Turnstile>\<^sub>p x\<close> using assms by blast
-  thus \<open>v \<Turnstile>\<^sub>s (EE x)\<close> 
-    using \<open>is_path v \<pi>2 \<and> (\<forall>i ia. \<pi>1 ia \<leftrightarrow> \<pi>2 ia)\<close> \<open>is_path w \<pi>1 \<and> \<pi>1 \<Turnstile>\<^sub>p x\<close> by auto
+  thus \<open>v \<Turnstile>\<^sub>s (EE x)\<close> using stepwise_bisim_pi2_path pi1_path by auto
 qed
 
-text \<open>This proof is a Isabelle implementation of the proof, that bisimulation is finer than 
+text \<open>This proof is an Isabelle implementation of the proof, that bisimulation is finer than 
       $CTL^*$-equivalence, as shown by Baier and Katoen @{cite baier2008modelchecking} 
-      in Lemma 7.26\<close>
-
+      in Lemma 7.26.\<close>
 lemma bisimulation_finer_than_ctls:
   fixes 
     \<Phi> :: \<open>'ap state_formula\<close> and
