@@ -12,9 +12,10 @@ context world_dependant_kripke_structure
 
 begin
 
-text \<open>Path definition taken from the Isabelle/HOL Tutorial @{cite nipkow2002isabelle}
-      Usage of $\omega$-words inspired by @{cite sickert2016ltl}.\<close>
 
+
+\<comment>\<open>Path definition taken from the Isabelle/HOL Tutorial @{cite nipkow2002isabelle}
+      Usage of $\omega$-words inspired by @{cite sickert2016ltl}.\<close>
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close> 
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
@@ -47,9 +48,8 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(X \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
-text \<open>Bisimulation definition  inspired by Baier and Katoen @{cite baier2008modelchecking} and by 
+\<comment>\<open>Bisimulation definition  inspired by Baier and Katoen @{cite baier2008modelchecking} and by 
       Pohlmann @{cite pohlmann2021reactivebisim}\<close>
-
 definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
     (ap w = ap v) \<and>
