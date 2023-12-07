@@ -13,7 +13,7 @@ definition (in preordered_counterfactual_structure) universal_would ::
     \<open>\<phi>  \<box>\<rightarrow>\<^sub>F\<^sub>S \<psi> \<equiv> {w. (\<forall> w1. w1 \<notin> \<phi>) \<or>
      (\<forall> w1. w1 \<in> \<phi> \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>
 
-abbreviation (in preordered_counterfactual_structure) existanial_might ::
+abbreviation (in preordered_counterfactual_structure) existential_might ::
   \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (\<open>_ \<diamond>\<rightarrow>\<^sub>F\<^sub>S _\<close> [70, 70] 100)
   where
     \<open>\<phi> \<diamond>\<rightarrow>\<^sub>F\<^sub>S \<psi> \<equiv> UNIV - (\<phi> \<box>\<rightarrow>\<^sub>F\<^sub>S (UNIV - \<psi>))\<close>

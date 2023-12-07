@@ -55,17 +55,34 @@ definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rig
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
     (ap w = ap v) \<and>
     (\<forall> w'. w \<le><w> w' \<longrightarrow> (\<exists> v'. v \<le><v> v' \<and> R w' v')) \<and>
-    (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R v' w'))\<close> 
+    (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R w' v'))\<close> 
 
 text \<open>Definition taken from Pohlmann @{cite pohlmann2021reactivebisim}\<close>
 
 definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
   where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
 
+lemma bisim_sym:
+  assumes \<open>p \<leftrightarrow> q\<close>
+  shows \<open>q \<leftrightarrow> p\<close>
+  using assms unfolding bisimilar_def
+proof 
+  fix R
+  assume \<open>bisimulation R \<and> R p q\<close>
+  let ?R' = \<open>\<lambda> a b. R b a\<close>
+  have \<open>bisimulation ?R' \<and> ?R' q p\<close> using bisimulation_def \<open>bisimulation R \<and> R p q\<close> by presburger
+  thus \<open>\<exists>R. bisimulation R \<and> R q p\<close> by auto
+qed
+
+text \<open>For the following lemma we assume, that the path lifting lemma (Lemma 7.5 in 
+      @{cite baier2008modelchecking}) holds. It states that, for any two worlds $w_1, w_2$ if $w_1$
+      is bisimilar to $w_2$, then for a path $\pi_1$ departing from $w_1$, there exists a path
+      $\pi_2$ departing from $w_2$, such that for all $n \in \mathbb{N}$ it holds that the world at the
+      nth position in $(\pi_1)$ is bisimilar to the world at the nth position in $\pi_2$.\<close>
+
 lemma existential_path_non_dist:
   assumes
     \<open>\<And> \<pi>1 \<pi>2. (\<forall>i. \<pi>1 i \<leftrightarrow> \<pi>2 i) \<longrightarrow> \<pi>1 \<Turnstile>\<^sub>p x = \<pi>2 \<Turnstile>\<^sub>p x\<close> and
-    \<comment>\<open>The path lifting lemma. Lemma 7.5 in @{cite baier2008modelchecking}\<close>
     path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>
   shows \<open>w \<leftrightarrow> v \<Longrightarrow>  w \<Turnstile>\<^sub>s (EE x) \<Longrightarrow> v \<Turnstile>\<^sub>s (EE x)\<close>
@@ -89,8 +106,6 @@ lemma bisimulation_finer_than_ctls:
     \<Phi> :: \<open>'ap state_formula\<close> and
     \<phi> :: \<open>'ap path_formula\<close> 
   assumes
-    \<comment>\<open>Bisimulation is a symmetric property. Lemma 7.4 in @{cite baier2008modelchecking}\<close>
-    bisim_sym: \<open>\<And> w v. w \<leftrightarrow> v \<Longrightarrow> v \<leftrightarrow> w\<close> and 
     path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
   shows
@@ -373,20 +388,20 @@ qed
 
 
 lemma bisim_r_is_bisimulation_back:
-  shows \<open>(bisim_r w v) \<longrightarrow> (\<forall>v'. v \<lesssim><v> v' \<longrightarrow> (\<exists>w'. w \<lesssim><w> w' \<and> bisim_r v' w'))\<close>
+  shows \<open>(bisim_r w v) \<longrightarrow> (\<forall>v'. v \<lesssim><v> v' \<longrightarrow> (\<exists>w'. w \<lesssim><w> w' \<and> bisim_r w' v'))\<close>
 proof
   assume \<open>bisim_r w v\<close>
-  then show \<open>\<forall>v'. v \<lesssim><v> v' \<longrightarrow> (\<exists>w'. w \<lesssim><w> w' \<and> bisim_r v' w')\<close>
+  then show \<open>\<forall>v'. v \<lesssim><v> v' \<longrightarrow> (\<exists>w'. w \<lesssim><w> w' \<and> bisim_r w' v')\<close>
   proof (cases w)
     case W_true
-    then show ?thesis by (metis bisim_r.simps(1) bisim_r.simps(3) bisim_r.simps(4) bisim_r.simps(7) 
-          bisim_r.simps(9) ctls_accessibility.simps(6) ctls_accessibility.simps(7) local.reflexive 
-          world.exhaust)
+    then show ?thesis 
+      by (metis bisim_r.simps(1) bisim_r.simps(3) bisim_r.simps(4) bisim_r.simps(6) bisim_r.simps(8) 
+          ctls_accessibility.simps(6) ctls_accessibility.simps(7) local.reflexive world.exhaust) 
   next
     case W_false
-    then show ?thesis
-      using \<open>bisim_r w v\<close> bisim_r.simps(13) bisim_r.simps(14) bisim_r.simps(15) bisim_r.simps(8) 
-        bisim_r_contains_rhs bisim_r_is_bisimulation_forth by blast
+    then show ?thesis 
+      by (metis bisim_r.simps(2) bisim_r.simps(3) bisim_r.simps(5) bisim_r.simps(7) bisim_r.simps(9) 
+          ctls_accessibility.simps(10) ctls_accessibility.simps(8) local.reflexive world.exhaust)
   next
     case W1
     then show ?thesis 
@@ -395,8 +410,8 @@ proof
   next
     case W2
     then show ?thesis 
-      using \<open>bisim_r w v\<close> bisim_r.simps(20) bisim_r.simps(21) bisim_r.simps(22) bisim_r.simps(7) 
-        bisim_r_contains_rhs bisim_r_is_bisimulation_forth by blast
+      using \<open>bisim_r w v\<close> bisim_r.simps(20) bisim_r.simps(21) bisim_r.simps(22) 
+        ctls_accessibility.elims(2) by blast
   next
     case W3
     then show ?thesis 
@@ -425,7 +440,7 @@ lemma w_true_w_false_not_ctl_star_distiguishable:
 proof -
   have \<open>bisim_r W_true W_false\<close> by simp
   hence \<open>W_true \<leftrightarrow> W_false\<close> using bism_r_is_bisimulation bisimilar_def by force
-  thus ?thesis using  bisim_sym path_lifting bisimulation_finer_than_ctls by auto
+  thus ?thesis using path_lifting bisimulation_finer_than_ctls by auto
 qed 
 
 end
