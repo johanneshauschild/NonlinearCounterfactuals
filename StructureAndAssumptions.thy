@@ -4,6 +4,10 @@ theory StructureAndAssumptions
   imports Main
 begin 
 
+text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
+      Katoen @{cite baier2008modelchecking}. 
+      We dropped the set of initial states, allowing every state to be an initial one.\<close>
+
 locale world_dependant_kripke_structure =
   fixes
     \<comment>\<open>Assigning a set of atomic propositions to each world.\<close>
@@ -14,13 +18,6 @@ locale world_dependant_kripke_structure =
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
-
-text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
-      Katoen @{cite baier2008modelchecking}. The name "accessibility" for the function encoding the similarity 
-      between worlds is due to the fact, that it is reinterpreted to state the fact "$w_1$ is more 
-      accessible from $w$ than $w_2$" in the following \texttt{locales}.
-
-      We dropped the set of initial states, allowing every state to be an initial one.\<close>
 
 locale preordered_counterfactual_structure = world_dependant_kripke_structure ap accessibility
   for
@@ -52,7 +49,7 @@ locale total_accessible_lewisian_structure = lewisian_structure + finkbeiner_sib
 
 section \<open>Formula equivalences\<close>
 
-\<comment>\<open>A lemma testing for a basic liveliness property.\<close>
+\<comment>\<open>A lemma testing for a basic property.\<close>
 lemma (in preordered_counterfactual_structure) not_phi_would_phi_false:
   shows 
     \<open>\<exists>w1. w \<le><w> w1 \<and> w1 \<in> UNIV - \<phi> \<and> (\<forall>w2. w2 \<le><w> w1 \<longrightarrow> w2 \<in> \<phi>) \<Longrightarrow> False\<close>

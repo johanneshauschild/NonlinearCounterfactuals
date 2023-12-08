@@ -4,6 +4,9 @@ theory LewisOperators
   imports StructureAndAssumptions
 begin
 
+text\<open>In this theory we provide definitions for Lewis Counterfactual Operators 
+      @{cite lewisCounterfactuals1973} and compare these to their semantics, as intended by Lewis.\<close>
+
 context preordered_counterfactual_structure begin
 
 subsection \<open>Lewis most notorious operators\<close>

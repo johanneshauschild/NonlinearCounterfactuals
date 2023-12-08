@@ -8,18 +8,24 @@ begin
 
 section \<open>Relation between expressive power of CTL* and Counterfactual Operators\<close>
 
+text\<open>This theory gives a comparison between the expressive power of CTL* and the expressive power
+     of the \enquote*{General Would} operator. To this end we prove, that CTL* can not 
+     distinguish bisimilar processes.\<close>
+
 context world_dependant_kripke_structure
 
 begin
 
+text\<open>The path definition is taken from the Isabelle/HOL Tutorial @{cite nipkow2002isabelle}
+     Usage of $\omega$-words is inspired by Sickert @{cite sickert2016ltl}.
+     To model the omega words we use the word datatype from the standard library of Isabelle/HOL
+     \<^cite>\<open>"Bauer2002HOLLibrary"\<close>.\<close>
 
-
-\<comment>\<open>Path definition taken from the Isabelle/HOL Tutorial @{cite nipkow2002isabelle}
-      Usage of $\omega$-words inspired by @{cite sickert2016ltl}.\<close>
-definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close> 
+definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close>
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-\<comment>\<open>Definition of the logic $CTL^*$ as in @{cite baier2008modelchecking}\<close>
+\<comment>\<open>Definition of the logic CTL* as in @{cite baier2008modelchecking}, concrete implmentation 
+   inspired by @{cite sickert2016ltl}.\<close>
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
   | True_state  ("true")
@@ -49,7 +55,7 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
 \<comment>\<open>Bisimulation definition  inspired by Baier and Katoen @{cite baier2008modelchecking} and by 
-      Pohlmann @{cite pohlmann2021reactivebisim}\<close>
+   Pohlmann @{cite pohlmann2021reactivebisim}\<close>
 definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
     (ap w = ap v) \<and>
@@ -60,7 +66,7 @@ definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rig
 definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
   where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
 
-\<comment>\<open>Lemma and it's proof also taken from @{cite pohlmann2021reactivebisim}\<close>
+\<comment>\<open>Lemma and its proof also taken from @{cite pohlmann2021reactivebisim}\<close>
 lemma bisim_sym:
   assumes \<open>p \<leftrightarrow> q\<close>
   shows \<open>q \<leftrightarrow> p\<close>
@@ -76,9 +82,9 @@ qed
 text \<open>For the following lemma we assume, that the path lifting lemma (Lemma 7.5 in 
       @{cite baier2008modelchecking}) holds. It states that, for any two worlds $w_1, w_2$ if $w_1$
       is bisimilar to $w_2$, then for a path $\pi_1$ departing from $w_1$, there exists a path
-      $\pi_2$ departing from $w_2$, such that for all $n \in \mathbb{N}$ it holds that the world at the
-      nth position in $(\pi_1)$ is bisimilar to the world at the nth position in $\pi_2$.
-      Proving it would have been out of the scope for the thesis.\<close>
+      $\pi_2$ departing from $w_2$, such that for all $n \in \mathbb{N}$ it holds that the world at 
+      the nth position in $\pi_1$ is bisimilar to the world at the nth position in $\pi_2$.
+      Proving it would have been out of the scope for this thesis.\<close>
 
 lemma existential_path_non_dist:
   assumes
@@ -98,7 +104,7 @@ proof -
 qed
 
 text \<open>This proof is an Isabelle implementation of the proof, that bisimulation is finer than 
-      $CTL^*$-equivalence, as shown by Baier and Katoen @{cite baier2008modelchecking} 
+      CTL*-equivalence, as shown by Baier and Katoen @{cite baier2008modelchecking} 
       in Lemma 7.26.\<close>
 lemma bisimulation_finer_than_ctls:
   fixes 
@@ -258,7 +264,11 @@ qed
   
 end
 
-subsection \<open>$W_{true}$ and $W_{false}$ are not distinguishable by  $CTL^*$\<close>
+subsection \<open>$W_{true}$ and $W_{false}$ are not distinguishable by  CTL*\<close>
+
+text\<open>In this part we proof $CLT^*$, that it can not distinguish $W_{true}$ and $W_{false}$.
+     To this end we examine a version of the \texttt{cf\_accessiblity} function, translated for 
+     $CLT^*$.\<close>
 
 fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<lesssim><_> _" [70, 70, 70] 80) 
   where 
@@ -418,20 +428,18 @@ proof
           local.reflexive w2_reaches_w2 w3_reaches_w3 world.exhaust)
   qed
 qed  
-  
+
 lemma bism_r_is_bisimulation:
   shows \<open>bisimulation bisim_r\<close>
   unfolding bisimulation_def 
   using bisim_r_is_bisimulation_back bisim_r_is_bisimulation_forth bism_r_has_eq_labels by blast
 
 text \<open>Knowing that $W_{true}$ and $W_{false}$ are bisimilar, we can show, that there is no 
-      distinguishing $CTL^*$ formula for them.\<close>
-
+      distinguishing CTL* formula for them.\<close>
 lemma w_true_w_false_not_ctl_star_distiguishable:
   fixes 
     \<Phi> :: \<open>ap state_formula\<close>
   assumes
-    bisim_sym: \<open>\<And> w v. w \<leftrightarrow> v \<Longrightarrow> v \<leftrightarrow> w\<close> and 
     path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
   shows 

@@ -5,6 +5,10 @@ begin
 
 section \<open>Formalization and Validation of Finkbeiner and Sibers operators\<close>
 
+text\<open>In this theory we provide definitions for Finkbeiner and Sibers  counterfactual operators 
+     @{cite finkbeinerCounterfactualsModuloTemporal2023} and compare these to their semantics, 
+     as stated by them.\<close>
+
 subsection \<open>Finkbeiner and Sibers adapted \emph{Counterfactual} operators\<close>
 
 definition (in preordered_counterfactual_structure) universal_would ::
