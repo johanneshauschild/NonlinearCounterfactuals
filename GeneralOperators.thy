@@ -5,7 +5,7 @@ begin
 
 section \<open>A reinterpretation of the counterfactual operators in the base structure\<close>
 
-text \<open>Finkbeiner and Siber  @{cite finkbeinerCounterfactualsModuloTemporal2023} suggest to drop the 
+text \<open>Finkbeiner and Siber \<^cite>\<open>"finkbeinerCounterfactualsModuloTemporal2023"\<close> suggest to drop the 
       assumption that every world is accessible from the actual world by not including inaccessible 
       worlds in $\leq_w$. We modify the counterfactual operators to make it possible to depict their
       semantics in structures without \emph{total accessibility}.\<close>

@@ -5,7 +5,9 @@ theory LewisOperators
 begin
 
 text\<open>In this theory we provide definitions for Lewis Counterfactual Operators 
-      @{cite lewisCounterfactuals1973} and compare these to their semantics, as intended by Lewis.\<close>
+     \<^cite>\<open>lewisCounterfactuals1973\<close> and compare these to their semantics, as intended by Lewis.
+     The counterfactual operators in this and the following theories have been shallowly embeded
+     \<^cite>\<open>benzmullerUniversalReasoningRational2017\<close>\<close>
 
 context preordered_counterfactual_structure begin
 
@@ -24,14 +26,13 @@ abbreviation (in preordered_counterfactual_structure) might ::
 
 subsection \<open>Necessity and Possibility\<close>
 
-text\<open>Lewis @{cite lewisCounterfactuals1973} suggests defining the modal operators
-    \emph{necessary} and \emph{possible} through his \emph{would} operator as follows:\<close>
-
 abbreviation (in preordered_counterfactual_structure) necessary ::
   \<open>'i set \<Rightarrow> 'i set\<close> (\<open>\<box> _\<close>  [70] 80)
   where
     \<open>(\<box> \<phi>) \<equiv> (UNIV - \<phi>) \<box>\<rightarrow>\<^sub>L \<phi>\<close>
 
+\<comment>\<open>For possible, definition and check against semantics have been swapped, in order to obtain just
+   one possible operator, independent of any of the counterfactual operators.\<close>
 abbreviation (in preordered_counterfactual_structure) possible ::
   \<open>'i set \<Rightarrow> 'i set\<close> (\<open>\<diamond> _\<close>  [70] 80)
   where
@@ -64,9 +65,6 @@ subsection \<open>Validatin of Lewis operators\<close>
 
 context lewisian_structure begin 
 
-text \<open>An example of a world and accessibility relation in which 
-     "if $\varphi$ would be the case, then $\psi$ would be the case" holds.\<close>
-
 lemma would_instatiation:
   assumes
     \<open>\<phi> = {W3, W1}\<close> and
@@ -85,7 +83,6 @@ lemma would_instatiation:
 text \<open>In order to ensure, that our implementation of the structure, as well as the definition of 
       Lewis operators in it are valid, we perform a comparison for each operator between its 
       abbreviation and a \emph{set comprehension} depicting its intended semantics.\<close>
-
 lemma necessary_follows_definition:
   shows 
     \<open>w \<in> \<box> \<phi> \<longleftrightarrow> w \<in> {w. \<forall>w1. w \<le><w> w1 \<longrightarrow> w1 \<in> \<phi>}\<close>

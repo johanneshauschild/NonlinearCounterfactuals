@@ -16,16 +16,16 @@ context world_dependant_kripke_structure
 
 begin
 
-text\<open>The path definition is taken from the Isabelle/HOL Tutorial @{cite nipkow2002isabelle}
-     Usage of $\omega$-words is inspired by Sickert @{cite sickert2016ltl}.
+text\<open>The path definition is taken from the Isabelle/HOL Tutorial \<^cite>\<open>nipkow2002isabelle\<close>
+     Usage of $\omega$-words is inspired by Sickert  \<^cite>\<open>"sickert2016ltl"\<close>.
      To model the omega words we use the word datatype from the standard library of Isabelle/HOL
      \<^cite>\<open>"Bauer2002HOLLibrary"\<close>.\<close>
 
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close>
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-\<comment>\<open>Definition of the logic CTL* as in @{cite baier2008modelchecking}, concrete implmentation 
-   inspired by @{cite sickert2016ltl}.\<close>
+\<comment>\<open>Definition of the logic CTL* as in \<^cite>\<open>"baier2008modelchecking"\<close>, concrete implmentation 
+   inspired by \<^cite>\<open>"sickert2016ltl"\<close>.\<close>
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
   | True_state  ("true")
@@ -43,7 +43,7 @@ primrec
   mc_state_formula :: \<open>'i \<Rightarrow> 'ap state_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>s _\<close> [82,82] 81)  and
   mc_path_formula :: \<open>'i word \<Rightarrow> 'ap path_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>p _\<close> [82,82] 81)
   where
-  \<open>w \<Turnstile>\<^sub>s prop(a) = (a \<in> (ap w))\<close>
+  \<open>w \<Turnstile>\<^sub>s prop(a) = (a \<in> (labeling w))\<close>
 | \<open>w \<Turnstile>\<^sub>s true = True\<close>
 | \<open>w \<Turnstile>\<^sub>s (~~ \<phi>) = (\<not>(w \<Turnstile>\<^sub>s \<phi>))\<close>
 | \<open>w \<Turnstile>\<^sub>s (\<phi> && \<psi>) = ((w \<Turnstile>\<^sub>s \<phi>) \<and> (w \<Turnstile>\<^sub>s \<psi>))\<close>
@@ -54,19 +54,19 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(X \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
-\<comment>\<open>Bisimulation definition  inspired by Baier and Katoen @{cite baier2008modelchecking} and by 
-   Pohlmann @{cite pohlmann2021reactivebisim}\<close>
+\<comment>\<open>Bisimulation definition  inspired by Baier and Katoen \<^cite>\<open>baier2008modelchecking\<close> and by 
+   Pohlmann \<^cite>\<open>pohlmann2021reactivebisim\<close>\<^cite>\<open>pohlmann2021reactivebisim\<close>\<close>
 definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
-    (ap w = ap v) \<and>
+    (labeling w = labeling v) \<and>
     (\<forall> w'. w \<le><w> w' \<longrightarrow> (\<exists> v'. v \<le><v> v' \<and> R w' v')) \<and>
     (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R w' v'))\<close> 
 
-\<comment>\<open>Definition taken from @{cite pohlmann2021reactivebisim}\<close>
+\<comment>\<open>Definition taken from \<^cite>\<open>pohlmann2021reactivebisim\<close>\<close>
 definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
   where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
 
-\<comment>\<open>Lemma and its proof also taken from @{cite pohlmann2021reactivebisim}\<close>
+\<comment>\<open>Lemma and its proof also taken from \<^cite>\<open>pohlmann2021reactivebisim\<close>\<close>
 lemma bisim_sym:
   assumes \<open>p \<leftrightarrow> q\<close>
   shows \<open>q \<leftrightarrow> p\<close>
@@ -80,7 +80,7 @@ proof
 qed
 
 text \<open>For the following lemma we assume, that the path lifting lemma (Lemma 7.5 in 
-      @{cite baier2008modelchecking}) holds. It states that, for any two worlds $w_1, w_2$ if $w_1$
+      \<^cite>\<open>baier2008modelchecking\<close>) holds. It states that, for any two worlds $w_1, w_2$ if $w_1$
       is bisimilar to $w_2$, then for a path $\pi_1$ departing from $w_1$, there exists a path
       $\pi_2$ departing from $w_2$, such that for all $n \in \mathbb{N}$ it holds that the world at 
       the nth position in $\pi_1$ is bisimilar to the world at the nth position in $\pi_2$.
@@ -104,7 +104,7 @@ proof -
 qed
 
 text \<open>This proof is an Isabelle implementation of the proof, that bisimulation is finer than 
-      CTL*-equivalence, as shown by Baier and Katoen @{cite baier2008modelchecking} 
+      CTL*-equivalence, as shown by Baier and Katoen \<^cite>\<open>baier2008modelchecking\<close> 
       in Lemma 7.26.\<close>
 lemma bisimulation_finer_than_ctls:
   fixes 
@@ -355,11 +355,13 @@ lemma bisim_r_contains_rhs:
   using bisim_r.simps world.exhaust by blast
 
 lemma bisim_constraints_meant_for_bisim_worlds_lhs:
-  shows \<open>\<forall> v. P W1 v  \<and> P W2 v \<and> P W3 v \<and> P W_false v \<and> P W_true v \<Longrightarrow> \<forall> w v. bisim_r w v \<longrightarrow> P w v\<close> 
+  shows \<open>\<forall> v. P W1 v  \<and> P W2 v \<and> P W3 v \<and> P W_false v \<and> P W_true v \<Longrightarrow> 
+         \<forall> w v. bisim_r w v \<longrightarrow> P w v\<close> 
   using bisim_r_contains_lhs by blast
 
 lemma bisim_constraints_meant_for_bisim_worlds_rhs:
-  shows \<open>\<forall> w. P w W1  \<and> P w W2 \<and> P w W3 \<and> P w W_false \<and> P w W_true \<Longrightarrow> \<forall> w v. bisim_r w v \<longrightarrow> P w v\<close> 
+  shows \<open>\<forall> w. P w W1  \<and> P w W2 \<and> P w W3 \<and> P w W_false \<and> P w W_true \<Longrightarrow> 
+         \<forall> w v. bisim_r w v \<longrightarrow> P w v\<close> 
   using bisim_r_contains_rhs by blast
 
 lemma bisim_r_is_bisimulation_forth:
@@ -436,7 +438,7 @@ lemma bism_r_is_bisimulation:
 
 text \<open>Knowing that $W_{true}$ and $W_{false}$ are bisimilar, we can show, that there is no 
       distinguishing CTL* formula for them.\<close>
-lemma w_true_w_false_not_ctl_star_distiguishable:
+lemma w_true_w_false_not_ctl_star_distinguishable:
   fixes 
     \<Phi> :: \<open>ap state_formula\<close>
   assumes
