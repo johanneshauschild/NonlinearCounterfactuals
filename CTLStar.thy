@@ -8,16 +8,16 @@ begin
 
 section \<open>Relation between Expressive Power of CTL* and Counterfactual Operators\<close>
 
-text\<open>This theory gives a comparison between the expressive power of CTL* and the expressive power
-     of the \enquote*{General Would} operator. To this end, we prove that CTL* can not distinguish 
-     bisimilar processes.\<close>
+text \<open>This theory gives a comparison between the expressive power of CTL* and the expressive power
+      of the \enquote*{General Would} operator. To this end, we prove that CTL* can not distinguish 
+      bisimilar processes.\<close>
 
 context world_dependent_kripke_structure begin
 
-text\<open>The path definition is taken from the Isabelle/HOL Tutorial \<^cite>\<open>nipkow2002isabelle\<close>.
-     Usage of $\omega$-words is inspired by Sickert \<^cite>\<open>sickert2016ltl\<close>.
-     To model the omega words, we use the \texttt{word} datatype from the standard library of 
-     Isabelle/HOL \<^cite>\<open>Bauer2002HOLLibrary\<close>.\<close>
+text \<open>The path definition is taken from the Isabelle/HOL Tutorial \<^cite>\<open>nipkow2002isabelle\<close>.
+      Usage of $\omega$-words is inspired by Sickert \<^cite>\<open>sickert2016ltl\<close>.
+      To model the omega words, we use the \texttt{word} datatype from the standard library of 
+      Isabelle/HOL \<^cite>\<open>Bauer2002HOLLibrary\<close>.\<close>
 
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close>
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
@@ -87,7 +87,7 @@ text \<open>For the following lemma, we assume that the path lifting lemma (Lemm
 lemma existential_path_non_dist:
   assumes
     \<open>\<And> \<pi>1 \<pi>2. (\<forall>i. \<pi>1 i \<leftrightarrow> \<pi>2 i) \<longrightarrow> \<pi>1 \<Turnstile>\<^sub>p x = \<pi>2 \<Turnstile>\<^sub>p x\<close> and
-    path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
+    path_lifting: \<open>\<And> w v \<pi>1. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close>
   shows \<open>w \<leftrightarrow> v \<Longrightarrow>  w \<Turnstile>\<^sub>s (EE x) \<Longrightarrow> v \<Turnstile>\<^sub>s (EE x)\<close>
 proof -
@@ -110,7 +110,7 @@ lemma bisimulation_finer_than_ctls:
     \<Phi> :: \<open>'ap state_formula\<close> and
     \<phi> :: \<open>'ap path_formula\<close> 
   assumes
-    path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
+    path_lifting: \<open>\<And> w v \<pi>1. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
   shows
     \<open>\<And> w v. w \<leftrightarrow> v \<longrightarrow> (w  \<Turnstile>\<^sub>s \<Phi> \<longleftrightarrow> v \<Turnstile>\<^sub>s \<Phi>)\<close>
@@ -186,7 +186,7 @@ primrec atomic_truth :: \<open>world \<Rightarrow> ap set\<close> (\<open>\<L> _
   | \<open>atomic_truth W2 = {B}\<close>
   | \<open>atomic_truth W3 = {B}\<close>
 
-locale would_distinguishing_wt_wf =
+locale general_would_distinguishing_wt_wf =
   preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>cf_accessibility\<close> 
 
 begin
@@ -265,9 +265,9 @@ end
 
 subsection \<open>$W_{true}$ and $W_{false}$ are not distinguishable by CTL*\<close>
 
-text\<open>In this part, we proof that CTL* can not distinguish between $W_{true}$ and $W_{false}$.
-     To this end, we examine a version of the \texttt{cf\_accessiblity} function, translated for 
-     CTL*.\<close>
+text \<open>In this part, we proof that CTL* can not distinguish between $W_{true}$ and $W_{false}$.
+      To this end, we examine a version of the \texttt{cf\_accessiblity} function, translated for 
+      CTL*.\<close>
 
 fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<lesssim><_> _" [70, 70, 70] 80) 
   where 
@@ -288,7 +288,7 @@ fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \
   | \<open>ctls_accessibility W2 _ _ = False\<close>
   | \<open>ctls_accessibility W3 _ _ = False\<close>
 
-locale ctls_not_distiguishing_wt_wf =
+locale ctls_not_distinguishing_wt_wf =
   world_dependent_kripke_structure \<open>atomic_truth\<close> \<open>ctls_accessibility\<close> 
 
 begin
@@ -437,11 +437,12 @@ lemma bism_r_is_bisimulation:
 
 text \<open>Knowing that $W_{true}$ and $W_{false}$ are bisimilar, we can show that there is no 
       distinguishing CTL* formula for them.\<close>
+
 lemma w_true_w_false_not_ctl_star_distinguishable:
   fixes 
     \<Phi> :: \<open>ap state_formula\<close>
   assumes
-    path_lifting: \<open>\<And> w v \<pi>1 \<pi>2. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
+    path_lifting: \<open>\<And> w v \<pi>1. \<lbrakk>bisimilar w v; is_path w \<pi>1\<rbrakk> \<Longrightarrow> 
       (\<exists> \<pi>2. is_path v \<pi>2 \<and> (\<forall> i. \<pi>1 i \<leftrightarrow> \<pi>2 i))\<close> 
   shows 
     \<open>(W_true \<Turnstile>\<^sub>s \<Phi> \<longleftrightarrow>  W_false \<Turnstile>\<^sub>s \<Phi>)\<close>
