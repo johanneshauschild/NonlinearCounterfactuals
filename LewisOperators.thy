@@ -1,17 +1,17 @@
-section \<open>Definition of Lewis \emph{Counterfactual} operators\<close>
+section \<open>Definition of Lewis Counterfactual Operators\<close>
 
 theory LewisOperators
   imports StructureAndAssumptions
 begin
 
-text\<open>In this theory we provide definitions for Lewis Counterfactual Operators 
+text\<open>In this theory, we provide definitions for Lewis' counterfactual operators 
      \<^cite>\<open>lewisCounterfactuals1973\<close> and compare these to their semantics, as intended by Lewis.
-     The counterfactual operators in this and the following theories have been shallowly embeded
-     \<^cite>\<open>benzmullerUniversalReasoningRational2017\<close>\<close>
+     The counterfactual operators in this theory and the following theories have been shallowly 
+     embedded \<^cite>\<open>benzmullerUniversalReasoningRational2017\<close>.\<close>
 
 context preordered_counterfactual_structure begin
 
-subsection \<open>Lewis most notorious operators\<close>
+subsection \<open>Lewis' central operators\<close>
 
 definition would ::
   \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (\<open>_ \<box>\<rightarrow>\<^sub>L_\<close> [70, 70] 100)
@@ -31,14 +31,14 @@ abbreviation (in preordered_counterfactual_structure) necessary ::
   where
     \<open>(\<box> \<phi>) \<equiv> (UNIV - \<phi>) \<box>\<rightarrow>\<^sub>L \<phi>\<close>
 
-\<comment>\<open>For possible, definition and check against semantics have been swapped, in order to obtain just
-   one possible operator, independent of any of the counterfactual operators.\<close>
+\<comment>\<open>For the `possible' operator, definition and check against semantics have been swapped, in order 
+  to obtain just one `possible' operator, independent of any of the counterfactual operators.\<close>
 abbreviation (in preordered_counterfactual_structure) possible ::
   \<open>'i set \<Rightarrow> 'i set\<close> (\<open>\<diamond> _\<close>  [70] 80)
   where
     \<open>\<diamond> \<phi> \<equiv> {w. \<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>}\<close>   
 
-subsection \<open>Four more of Lewis operators\<close>
+subsection \<open>Four more of Lewis' operators\<close>
 
 abbreviation  (in preordered_counterfactual_structure) strong_would :: 
   \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (infixr\<open>\<box>\<Rightarrow>\<^sub>L\<close>100)
@@ -61,11 +61,9 @@ abbreviation (in preordered_counterfactual_structure) at_least_as_possible ::
     \<open>\<phi> \<preceq>\<^sub>L \<psi> \<equiv> (\<phi> \<union> \<psi>) \<diamond>\<Rightarrow>\<^sub>L \<phi>\<close>
 end
 
-subsection \<open>Validatin of Lewis operators\<close>
+subsection \<open>Validation of Lewis' operators\<close>
 
-context lewisian_structure begin 
-
-lemma would_instatiation:
+lemma (in lewisian_structure) would_instatiation:
   assumes
     \<open>\<phi> = {W3, W1}\<close> and
     \<open>\<psi> = {W1}\<close> and
@@ -80,9 +78,12 @@ lemma would_instatiation:
     \<open>W \<in> \<phi> \<box>\<rightarrow>\<^sub>L\<psi>\<close>
   using assms unfolding would_def by blast
 
-text \<open>In order to ensure, that our implementation of the structure, as well as the definition of 
-      Lewis operators in it are valid, we perform a comparison for each operator between its 
+context preordered_counterfactual_structure begin 
+
+text \<open>In order to ensure that our implementation of the structure, as well as the definition of 
+      Lewis' operators within are valid, we perform a comparison for each operator between its 
       abbreviation and a \emph{set comprehension} depicting its intended semantics.\<close>
+
 lemma necessary_follows_definition:
   shows 
     \<open>w \<in> \<box> \<phi> \<longleftrightarrow> w \<in> {w. \<forall>w1. w \<le><w> w1 \<longrightarrow> w1 \<in> \<phi>}\<close>
@@ -109,7 +110,7 @@ next
     using would_def by auto
 qed
 
-lemma strong_would_follows_defintion:
+lemma strong_would_follows_definition:
   shows
     \<open>w \<in> \<phi> \<box>\<Rightarrow>\<^sub>L \<psi> \<longleftrightarrow> w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi> \<and> 
      (\<forall> w2. w2 \<le><w> w1 \<longrightarrow> (w2 \<in> UNIV - \<phi> \<union> \<psi>)))}\<close>

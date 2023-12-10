@@ -33,16 +33,24 @@
 
 \title{ \textbf{Nonlinear Counterfactuals in Isabelle/HOL}}
 \date{\today}
+\author{Johannes Hauschild}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-\noindent
-Lorem ipsum dolor sit amet.
+  This thesis investigates the semantics of Lewis' counterfactual operators, as well as their improvements by Finkbeiner and Siber. Moving on, we give a further improvement.
 
-
+  To this end we formalise the counterfactual operators under investigation in a logic CFL defined over world dependent Kripke structures. 
+  Problematic assumptions about these Kripke structures are necessary for Lewis' operators to obtain their (likely) intended semantics.
+  We validate that Finkbeiner and Sibers operators enable a relaxation of these assumptions.
+  Furthermore, we define counterfactual operators which again allow for a further relaxation.
+  
+  Finally, we analyse the relationship between CFL and CTL* using a translation function.
+  Results show that using the translation function, CTL* and CFL are not comparable in terms of their expressive power.
+  
+  Our findings are backed by a formalisation in Isabelle/HOL.
 \end{abstract}
 
 % include generated text of all theories

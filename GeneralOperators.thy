@@ -3,14 +3,14 @@ theory GeneralOperators
     FinkbeinerSiberOperators
 begin
 
-section \<open>A reinterpretation of the counterfactual operators in the base structure\<close>
+section \<open>A Reinterpretation of the Counterfactual Operators in the Base Structure\<close>
 
-text \<open>Finkbeiner and Siber \<^cite>\<open>"finkbeinerCounterfactualsModuloTemporal2023"\<close> suggest to drop the 
+text \<open>Finkbeiner and Siber \<^cite>\<open>finkbeinerCounterfactualsModuloTemporal2023\<close> suggest to drop the 
       assumption that every world is accessible from the actual world by not including inaccessible 
-      worlds in $\leq_w$. We modify the counterfactual operators to make it possible to depict their
-      semantics in structures without \emph{total accessibility}.\<close>
+      worlds in \texttt{accessibility}. We modify the counterfactual operators to depict their
+      intended semantics in structures without total accessibility.\<close>
 
-subsection \<open>Defining the operators\<close>
+subsection \<open>Defining the Operators\<close>
 
 definition (in preordered_counterfactual_structure) general_would ::
   \<open>'i set \<Rightarrow> 'i set \<Rightarrow> 'i set\<close> (\<open>_ \<box>\<rightarrow> _\<close> [70, 70] 100) 
@@ -43,7 +43,7 @@ abbreviation (in preordered_counterfactual_structure) general_at_least_as_possib
   where 
     \<open>\<phi> \<preceq> \<psi> \<equiv> (\<phi> \<union> \<psi>) \<diamond>\<Rightarrow> \<phi>\<close>
 
-subsection \<open>Validating the definitions\<close>
+subsection \<open>Validating the Definitions\<close>
 
 lemma (in preordered_counterfactual_structure) general_would_instatiation:
   assumes
@@ -60,7 +60,7 @@ lemma (in preordered_counterfactual_structure) general_would_instatiation:
     \<open>W \<in> \<phi> \<box>\<rightarrow> \<psi>\<close>
   using assms unfolding general_would_def by blast
 
-lemma (in preordered_counterfactual_structure) possible_eq_to_gen_would_def:
+lemma (in preordered_counterfactual_structure) possible_eq_to_def_by_gen_would:
   shows \<open>w \<in> \<diamond> \<phi> \<longleftrightarrow> w \<in> UNIV - (\<phi> \<box>\<rightarrow> {})\<close>
   unfolding general_would_def by fastforce
 
@@ -92,10 +92,11 @@ next
     using general_would_def preordered_counterfactual_structure_axioms by auto
 qed
 
-text \<open>While we are able to deliver a set comprehension capturing the semantics for 
-      \emph{General More Possible} as well as \emph{General At least as Possible}
-      The big difference from the \emph{set comprehensions} for their Lewisian counterparts 
-      suggests, that their semantics are strongly tied to the \emph{linearity} assumption.\<close>
+text \<open>While we are able to deliver \emph{set comprehensions} capturing the semantics for 
+      `General More Possible' as well as `General At least As Possible',
+      the difference from the \emph{set comprehensions} for their Lewisian counterparts 
+      suggests that their semantics are strongly tied to the linearity assumption.\<close>
+
 lemma (in preordered_counterfactual_structure) general_more_possible_follows_definition:
   shows \<open>w \<in> \<phi> \<prec> \<psi> \<longleftrightarrow> w \<in> {w. (\<exists> w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> (\<forall> w1. w \<le><w> w1 \<and> w1 \<in> \<psi>
   \<longrightarrow> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><w> w2 \<longrightarrow> w3 \<notin> \<psi>)))}\<close>
@@ -161,10 +162,10 @@ qed
 
 subsection \<open>Comparison to Lewis Operators\<close>
 
-text \<open>Finally, we are able to show, that the generalised operators meet their Lewisian counterparts
-      under the \emph{linearity} assumption. The same holds for Finkbeiner and Sibers operators 
-      under the \emph{total accessibility} assumption.
-      For any of the Lewisian operators (exept `At Least As Possible'), it can be shown by 
+text \<open>Finally, we are able to show that the generalised operators meet their Lewisian counterparts
+      under the linearity assumption. The same holds for Finkbeiner and Sibers operators 
+      under the total accessibility assumption.
+      For any of the Lewisian operators (except `At Least As Possible') it can be shown by 
       counterexample, that they miss their (likely) intended semantics being evaluated under the 
       base assumptions. The same holds for Finkbeiner and Sibers operators.\<close>
 

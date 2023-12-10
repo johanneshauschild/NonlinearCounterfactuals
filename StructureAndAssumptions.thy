@@ -1,4 +1,4 @@
-section \<open>Structure and sets of assumptions\<close>
+section \<open>Structure and Sets of Assumptions\<close>
 
 theory StructureAndAssumptions
   imports Main
@@ -6,28 +6,28 @@ begin
 
 text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
       Katoen \<^cite>\<open>"baier2008modelchecking"\<close>. 
-      We dropped the set of initial states, allowing every state to be an initial one.\<close>
+      We dropped the set of initial states, allowing every state to be an initial state.\<close>
 
-locale world_dependant_kripke_structure =
+locale world_dependent_kripke_structure =
   fixes
     \<comment>\<open>Assigning a set of atomic propositions to each world.\<close>
     labeling :: \<open>'i \<Rightarrow> 'ap set\<close> and
     \<comment>\<open>$w1 \leq_w w2$ is enconding the notion "$w_1$ at least as similar to $w$ as is $w_2$".
       A similar relation was defined by Lewis \<^cite>\<open>lewisCounterfactuals1973\<close> as well as Finkbeiner 
-      and Siber \<^cite>\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>\<close>
+      and Siber \<^cite>\<open>finkbeinerCounterfactualsModuloTemporal2023\<close>.\<close>
     accessibility :: \<open>'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool\<close> ("_ \<le><_> _" [70, 70, 70] 80)
   assumes
     reflexive [intro]: \<open>w1 \<le><w> w1\<close>
 
-locale preordered_counterfactual_structure = world_dependant_kripke_structure labeling accessibility
+locale preordered_counterfactual_structure = world_dependent_kripke_structure labeling accessibility
   for
     labeling :: \<open>'i \<Rightarrow> 'ap set\<close> and
     accessibility :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> bool" ("_ \<le><_> _" [70, 70, 70] 80) +
   assumes
     \<comment>\<open>Lewis' \<^cite>\<open>lewisCounterfactuals1973\<close>  as well as Finkbeiner and Sibers 
-      \<^cite>\<open>finkbeinerCounterfactualsModuloTemporal2023\<close> structure are transitive\<close>
+      \<^cite>\<open>finkbeinerCounterfactualsModuloTemporal2023\<close> structure are transitive:\<close>
     transitive [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w2 \<le><w> w3\<rbrakk> \<Longrightarrow> w1 \<le><w> w3\<close>  and
-    \<comment>\<open>We assume, that any two worlds, which are comparable in respect to a world, are also 
+    \<comment>\<open>We assume that any two worlds which are comparable in respect to a world are also 
       accessible from that world:\<close>
     meaningful_acessibility [intro]: \<open>\<lbrakk>w1 \<le><w> w2; w1 \<noteq> w2\<rbrakk> \<Longrightarrow> w \<le><w> w1 \<and> w \<le><w> w2\<close> 
 

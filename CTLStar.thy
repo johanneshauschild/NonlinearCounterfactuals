@@ -6,26 +6,24 @@ imports
 
 begin
 
-section \<open>Relation between expressive power of CTL* and Counterfactual Operators\<close>
+section \<open>Relation between Expressive Power of CTL* and Counterfactual Operators\<close>
 
 text\<open>This theory gives a comparison between the expressive power of CTL* and the expressive power
-     of the \enquote*{General Would} operator. To this end we prove, that CTL* can not 
-     distinguish bisimilar processes.\<close>
+     of the \enquote*{General Would} operator. To this end, we prove that CTL* can not distinguish 
+     bisimilar processes.\<close>
 
-context world_dependant_kripke_structure
+context world_dependent_kripke_structure begin
 
-begin
-
-text\<open>The path definition is taken from the Isabelle/HOL Tutorial \<^cite>\<open>nipkow2002isabelle\<close>
-     Usage of $\omega$-words is inspired by Sickert  \<^cite>\<open>"sickert2016ltl"\<close>.
-     To model the omega words we use the word datatype from the standard library of Isabelle/HOL
-     \<^cite>\<open>"Bauer2002HOLLibrary"\<close>.\<close>
+text\<open>The path definition is taken from the Isabelle/HOL Tutorial \<^cite>\<open>nipkow2002isabelle\<close>.
+     Usage of $\omega$-words is inspired by Sickert \<^cite>\<open>sickert2016ltl\<close>.
+     To model the omega words, we use the \texttt{word} datatype from the standard library of 
+     Isabelle/HOL \<^cite>\<open>Bauer2002HOLLibrary\<close>.\<close>
 
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close>
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-\<comment>\<open>Definition of the logic CTL* as in \<^cite>\<open>"baier2008modelchecking"\<close>, concrete implmentation 
-   inspired by \<^cite>\<open>"sickert2016ltl"\<close>.\<close>
+\<comment>\<open>Definition of the logic CTL* as in \<^cite>\<open>baier2008modelchecking\<close>, concrete implementation 
+   inspired by \<^cite>\<open>sickert2016ltl\<close>.\<close>
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
   | True_state  ("true")
@@ -54,19 +52,19 @@ primrec
 | \<open>\<pi> \<Turnstile>\<^sub>p(X \<phi>) = ((suffix 1 \<pi>) \<Turnstile>\<^sub>p \<phi>)\<close>
 | \<open>\<pi> \<Turnstile>\<^sub>p(\<phi> UU \<psi>) = (\<exists>i. ((suffix i \<pi>) \<Turnstile>\<^sub>p \<psi>) \<and> (\<forall>j<i. ((suffix j \<pi>) \<Turnstile>\<^sub>p \<phi>)))\<close>
 
-\<comment>\<open>Bisimulation definition  inspired by Baier and Katoen \<^cite>\<open>baier2008modelchecking\<close> and by 
-   Pohlmann \<^cite>\<open>pohlmann2021reactivebisim\<close>\<^cite>\<open>pohlmann2021reactivebisim\<close>\<close>
+\<comment>\<open>Bisimulation definition inspired by Baier and Katoen \<^cite>\<open>baier2008modelchecking\<close> and by 
+   Pohlmann \<^cite>\<open>pohlmann2021reactivebisim\<close>.\<close>
 definition bisimulation :: \<open>('i \<Rightarrow> 'i \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>bisimulation R \<equiv> \<forall> w v. R w v \<longrightarrow> 
     (labeling w = labeling v) \<and>
     (\<forall> w'. w \<le><w> w' \<longrightarrow> (\<exists> v'. v \<le><v> v' \<and> R w' v')) \<and>
     (\<forall> v'. v \<le><v> v' \<longrightarrow> (\<exists> w'. w \<le><w> w' \<and> R w' v'))\<close> 
 
-\<comment>\<open>Definition taken from \<^cite>\<open>pohlmann2021reactivebisim\<close>\<close>
+\<comment>\<open>Definition taken from \<^cite>\<open>pohlmann2021reactivebisim\<close>.\<close>
 definition bisimilar :: \<open>'i \<Rightarrow> 'i \<Rightarrow> bool\<close> (\<open>_ \<leftrightarrow> _\<close> [70, 70] 70)
   where \<open>w \<leftrightarrow> v \<equiv> \<exists> R. bisimulation R \<and> R w v\<close>
 
-\<comment>\<open>Lemma and its proof also taken from \<^cite>\<open>pohlmann2021reactivebisim\<close>\<close>
+\<comment>\<open>Lemma and its proof also taken from \<^cite>\<open>pohlmann2021reactivebisim\<close>.\<close>
 lemma bisim_sym:
   assumes \<open>p \<leftrightarrow> q\<close>
   shows \<open>q \<leftrightarrow> p\<close>
@@ -79,12 +77,12 @@ proof
   thus \<open>\<exists>R. bisimulation R \<and> R q p\<close> by auto
 qed
 
-text \<open>For the following lemma we assume, that the path lifting lemma (Lemma 7.5 in 
-      \<^cite>\<open>baier2008modelchecking\<close>) holds. It states that, for any two worlds $w_1, w_2$ if $w_1$
+text \<open>For the following lemma, we assume that the path lifting lemma (Lemma 7.5 in 
+      \<^cite>\<open>baier2008modelchecking\<close>) holds. It states that for any two worlds $w_1, w_2$ if $w_1$
       is bisimilar to $w_2$, then for a path $\pi_1$ departing from $w_1$, there exists a path
       $\pi_2$ departing from $w_2$, such that for all $n \in \mathbb{N}$ it holds that the world at 
       the nth position in $\pi_1$ is bisimilar to the world at the nth position in $\pi_2$.
-      Proving it would have been out of the scope for this thesis.\<close>
+      Proving it is out of scope for this thesis.\<close>
 
 lemma existential_path_non_dist:
   assumes
@@ -103,9 +101,10 @@ proof -
   thus \<open>v \<Turnstile>\<^sub>s (EE x)\<close> using stepwise_bisim_pi2_path pi1_path by auto
 qed
 
-text \<open>This proof is an Isabelle implementation of the proof, that bisimulation is finer than 
+text \<open>This is an Isabelle implementation of the proof that bisimulation is finer than 
       CTL*-equivalence, as shown by Baier and Katoen \<^cite>\<open>baier2008modelchecking\<close> 
       in Lemma 7.26.\<close>
+
 lemma bisimulation_finer_than_ctls:
   fixes 
     \<Phi> :: \<open>'ap state_formula\<close> and
@@ -152,8 +151,8 @@ qed
 
 end
 
-subsection \<open>Example \emph{Counterfactual} Structure containing two \enquote*{Would} 
-            distinguishable worlds\<close>
+subsection \<open>Example Counterfactual Structure containing two `General Would' 
+            distinguishable Worlds\<close>
 
 datatype world = W_true | W_false | W1 | W2 | W3
 datatype ap = B | F
@@ -187,7 +186,7 @@ primrec atomic_truth :: \<open>world \<Rightarrow> ap set\<close> (\<open>\<L> _
   | \<open>atomic_truth W2 = {B}\<close>
   | \<open>atomic_truth W3 = {B}\<close>
 
-locale would_distiguishing_wt_wf =
+locale would_distinguishing_wt_wf =
   preordered_counterfactual_structure \<open>atomic_truth\<close> \<open>cf_accessibility\<close> 
 
 begin
@@ -228,8 +227,8 @@ next
   show \<open>{W1} \<subseteq> {w. F \<in> \<L> w}\<close> by simp
 qed
 
-text \<open>The following two lemmata show, that $W_{true}$ and $W_{false}$ are distinguishable 
-      by \enquote*{General Would}\<close>
+text \<open>The following two lemmata show that $W_{true}$ and $W_{false}$ are distinguishable 
+      by `General Would'.\<close>
 
 lemma W_true_in_would_sem:
   shows \<open>W_true \<in> {w. B \<in> \<L> w} \<box>\<rightarrow> {w. F \<in> \<L> w}\<close>
@@ -264,11 +263,11 @@ qed
   
 end
 
-subsection \<open>$W_{true}$ and $W_{false}$ are not distinguishable by  CTL*\<close>
+subsection \<open>$W_{true}$ and $W_{false}$ are not distinguishable by CTL*\<close>
 
-text\<open>In this part we proof $CLT^*$, that it can not distinguish $W_{true}$ and $W_{false}$.
-     To this end we examine a version of the \texttt{cf\_accessiblity} function, translated for 
-     $CLT^*$.\<close>
+text\<open>In this part, we proof that CTL* can not distinguish between $W_{true}$ and $W_{false}$.
+     To this end, we examine a version of the \texttt{cf\_accessiblity} function, translated for 
+     CTL*.\<close>
 
 fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \<Rightarrow> bool\<close> ("_ \<lesssim><_> _" [70, 70, 70] 80) 
   where 
@@ -290,7 +289,7 @@ fun ctls_accessibility :: \<open>world \<Rightarrow> world \<Rightarrow> world \
   | \<open>ctls_accessibility W3 _ _ = False\<close>
 
 locale ctls_not_distiguishing_wt_wf =
-  world_dependant_kripke_structure \<open>atomic_truth\<close> \<open>ctls_accessibility\<close> 
+  world_dependent_kripke_structure \<open>atomic_truth\<close> \<open>ctls_accessibility\<close> 
 
 begin
 
@@ -436,7 +435,7 @@ lemma bism_r_is_bisimulation:
   unfolding bisimulation_def 
   using bisim_r_is_bisimulation_back bisim_r_is_bisimulation_forth bism_r_has_eq_labels by blast
 
-text \<open>Knowing that $W_{true}$ and $W_{false}$ are bisimilar, we can show, that there is no 
+text \<open>Knowing that $W_{true}$ and $W_{false}$ are bisimilar, we can show that there is no 
       distinguishing CTL* formula for them.\<close>
 lemma w_true_w_false_not_ctl_star_distinguishable:
   fixes 
