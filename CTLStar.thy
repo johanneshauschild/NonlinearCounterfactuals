@@ -38,9 +38,9 @@ datatype 'a state_formula =
   | Next_path \<open>'a path_formula\<close> (\<open>X _\<close>)
   | Until_path \<open>'a path_formula\<close> \<open>'a path_formula\<close> (\<open>_ UU _\<close> [82,82] 81)
 
+\<comment>\<open>Truth conditions resemble \<^cite>\<open>sickert2016ltl\<close>, except for \texttt{EE} and \texttt{Is}.\<close>
 primrec 
   mc_state_formula :: \<open>'i \<Rightarrow> 'ap state_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>s _\<close> [82,82] 81)  and
-  \<comment>\<open>Path formula model checking resembles in large parts \<^cite>\<open>sickert2016ltl\<close>.\<close>
   mc_path_formula :: \<open>'i word \<Rightarrow> 'ap path_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>p _\<close> [82,82] 81)
   where
   \<open>w \<Turnstile>\<^sub>s prop(a) = (a \<in> (labeling w))\<close>
@@ -232,7 +232,7 @@ qed
 text \<open>The following two lemmata show that $W_{true}$ and $W_{false}$ are distinguishable 
       by `General Would'.\<close>
 
-lemma W_true_in_would_sem:
+lemma W_true_in_gen_would:
   shows \<open>W_true \<in> {w. B \<in> \<L> w} \<box>\<rightarrow> {w. F \<in> \<L> w}\<close>
 proof -
   have \<open>(\<forall> w1. (W_true \<lessapprox><W_true> w1 \<and> w1 \<in> {W1,W2,W3}) \<longrightarrow> 
@@ -248,7 +248,7 @@ proof -
     using simplify_general_would phi_semantics psi_semantics by metis
 qed
 
-lemma W_false_not_in_would_sem:
+lemma W_false_not_in_gen_would:
   shows \<open>W_false \<notin> {w. B \<in> \<L> w} \<box>\<rightarrow> {w. F \<in> \<L> w}\<close>
 proof -
   have  \<open>\<not>(\<forall> w1. (W_false \<lessapprox><W_false> w1 \<and> w1 \<in> {W1,W2,W3}) \<longrightarrow> 
