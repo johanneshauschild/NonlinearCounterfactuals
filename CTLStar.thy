@@ -23,7 +23,7 @@ definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close>
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
 text \<open>Syntax and Semantics of the logic CTL* as in \<^cite>\<open>baier2008modelchecking\<close>, concrete 
-      implementation  inspired by \<^cite>\<open>sickert2016ltl\<close>.\<close>
+      implementation inspired by \<^cite>\<open>sickert2016ltl\<close>.\<close>
 
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
