@@ -22,8 +22,9 @@ text \<open>The path definition is taken from the Isabelle/HOL Tutorial \<^cite>
 definition is_path :: \<open>'i \<Rightarrow> 'i word \<Rightarrow> bool\<close>
   where \<open>is_path w \<pi> \<equiv>  \<pi> 0 = w \<and> (\<forall> n. \<pi> n \<le><\<pi> n> \<pi> (Suc n))\<close>
 
-\<comment>\<open>Definition of the logic CTL* as in \<^cite>\<open>baier2008modelchecking\<close>, concrete implementation 
-   inspired by \<^cite>\<open>sickert2016ltl\<close>.\<close>
+text \<open>Syntax and Semantics of the logic CTL* as in \<^cite>\<open>baier2008modelchecking\<close>, concrete 
+      implementation  inspired by \<^cite>\<open>sickert2016ltl\<close>.\<close>
+
 datatype 'a state_formula =  
   Prop_state 'a ("prop'(_')")
   | True_state  ("true")
@@ -39,6 +40,7 @@ datatype 'a state_formula =
 
 primrec 
   mc_state_formula :: \<open>'i \<Rightarrow> 'ap state_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>s _\<close> [82,82] 81)  and
+  \<comment>\<open>Path formula model checking resembles in large parts \<^cite>\<open>sickert2016ltl\<close>.\<close>
   mc_path_formula :: \<open>'i word \<Rightarrow> 'ap path_formula \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>p _\<close> [82,82] 81)
   where
   \<open>w \<Turnstile>\<^sub>s prop(a) = (a \<in> (labeling w))\<close>
