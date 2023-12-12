@@ -5,7 +5,7 @@ theory StructureAndAssumptions
 begin 
 
 text \<open>This structure is meant to implement a Kripke structure close to these employed by Baier and 
-      Katoen \<^cite>\<open>"baier2008modelchecking"\<close>. 
+      Katoen \<^cite>\<open>baier2008modelchecking\<close>. 
       We dropped the set of initial states, allowing every state to be an initial state.\<close>
 
 locale world_dependent_kripke_structure =

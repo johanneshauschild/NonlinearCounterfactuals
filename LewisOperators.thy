@@ -29,7 +29,7 @@ subsection \<open>Necessity and Possibility\<close>
 abbreviation (in preordered_counterfactual_structure) necessary ::
   \<open>'i set \<Rightarrow> 'i set\<close> (\<open>\<box> _\<close>  [70] 80)
   where
-    \<open>(\<box> \<phi>) \<equiv> (UNIV - \<phi>) \<box>\<rightarrow>\<^sub>L \<phi>\<close>
+    \<open>\<box> \<phi> \<equiv> (UNIV - \<phi>) \<box>\<rightarrow>\<^sub>L \<phi>\<close>
 
 \<comment>\<open>For the `possible' operator, definition and check against semantics have been swapped, in order 
   to obtain just one `possible' operator, independent of any of the counterfactual operators.\<close>
@@ -97,7 +97,7 @@ lemma possible_follows_defintion:
 lemma might_follows_definition:
   shows 
     \<open>w \<in> \<phi> \<diamond>\<rightarrow>\<^sub>L \<psi> \<longleftrightarrow> w \<in>  {w. (\<exists> w1. w \<le><w> w1  \<and> w1 \<in> \<phi>) \<and> 
-     (\<forall> w1. w \<le><w> w1 \<longrightarrow> (w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>)))}\<close>
+     (\<forall> w1. w \<le><w> w1 \<longrightarrow> w1 \<notin> \<phi> \<or> (\<exists> w2. w2 \<le><w> w1 \<and> w2 \<in> \<phi> \<inter> \<psi>))}\<close>
 proof
   assume \<open>w \<in> UNIV - \<phi> \<box>\<rightarrow>\<^sub>L(UNIV - \<psi>)\<close>
   thus \<open>w \<in> {w. (\<exists>w1. w \<le><w> w1 \<and> w1 \<in> \<phi>) \<and> 

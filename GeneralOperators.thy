@@ -175,6 +175,8 @@ lemma (in lewisian_structure) would_equivalent_to_general_would:
   unfolding would_def general_would_def using general_would_comprehension_is_would_comprehension 
   by blast
 
+\<comment>\<open>This lemma resembles Finkbeiners and Sibers findings regarding the difference between `Would'
+   and `Universal Would'\<close>
 lemma (in preordered_counterfactual_structure) would_not_wide_enough:
   assumes
     \<open>\<phi> = {W1, W2}\<close> and
@@ -185,7 +187,7 @@ lemma (in preordered_counterfactual_structure) would_not_wide_enough:
     \<open>\<not> W2 \<le><W> W1\<close> and
     \<open>W \<noteq> W1 \<and> W \<noteq> W2 \<and> W1 \<noteq> W2\<close>
   shows
-    \<open>W \<notin> \<phi> \<box>\<rightarrow> \<psi> \<and> W \<in> \<phi> \<box>\<rightarrow>\<^sub>L \<psi>\<close>
+    \<open>W \<notin> \<phi> \<box>\<rightarrow> \<psi> \<and> W \<in> \<phi> \<box>\<rightarrow>\<^sub>L \<psi>\<close> 
 proof
     have \<open>(\<forall> w1. W \<le><W> w1 \<longrightarrow> w1 \<notin> \<phi>) \<or> (\<forall> w1. W \<le><W> w1 \<and> w1 \<in> \<phi> \<longrightarrow>
     (\<exists> w2. w2 \<le><W> w1 \<and> w2 \<in> \<phi> \<and> (\<forall> w3. w3 \<le><W> w2 \<longrightarrow> w3 \<in> UNIV - \<phi> \<union> \<psi>))) \<Longrightarrow> False\<close> 
@@ -203,6 +205,8 @@ lemma (in lewisian_structure) might_equivalent_to_general_might:
     \<open>w \<in> \<phi> \<diamond>\<rightarrow>\<^sub>L \<psi> \<longleftrightarrow> w \<in> \<phi> \<diamond>\<rightarrow> \<psi>\<close>
   by (simp add: would_equivalent_to_general_would)
 
+\<comment>\<open>This lemma resembles Finkbeiners and Sibers findings regarding the difference between `Might'
+   and `Existential Might'\<close>
 lemma (in preordered_counterfactual_structure) might_not_narrow_enough:
   assumes
     \<open>\<phi> = {W1, W2}\<close> and
